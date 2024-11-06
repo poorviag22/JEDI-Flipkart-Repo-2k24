@@ -6,7 +6,9 @@ public interface GymCustomerBusiness {
     // Interface are using for declaration of the services
 
     public void createProfile(GymCustomer customer);
-    public boolean viewBookings(int customerId);
+    public void viewBookings(int customerId);
     public boolean waitlistStatus(int customerId);
-    public void modifyBooking();
+    public boolean modifyBooking(int customerId);
+    public boolean cancelBooking(int customerId);
+    public void makepayment(int customerId);
 }

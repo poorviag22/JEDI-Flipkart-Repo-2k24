@@ -5,10 +5,12 @@ import com.flipfit.bean.GymSlots;
 
 public interface GymOwnerBusiness {
 
-    public void registerCenter(GymCenter center);
-    public void addnewSlot(GymSlots slot);
-    public void deleteSlot(int slotId);
-    public void deleteCenter(int centerId);
+    public void registerCenter();
+    public void addnewSlot();
+    public void deleteSlot();
+    public void deleteCenter();
+    public void editProfile();
+    public void viewReport();
 
 
 }

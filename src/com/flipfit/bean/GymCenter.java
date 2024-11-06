@@ -1,16 +1,16 @@
 package com.flipfit.bean;
 
 public class GymCenter {
-    private int id;
+    private int centerId;
     private String gymName;
     private String gymLocation;
     private int numOfSlots;
 
     public int getId() {
-        return id;
+        return centerId;
     }
     public void setId(int id) {
-        this.id = id;
+        this.centerId = centerId;
     }
     public String getGymName() {
         return gymName;

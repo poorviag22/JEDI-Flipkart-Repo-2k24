@@ -4,5 +4,7 @@ public interface GymAdminBusiness {
 public void viewBookings();
 public void editProfile();;
 public void viewCustomers();
-public void approveOwnerRegistration(int ownerId, int centerId);
+public void approveOwnerRegistration();
+public void pendingRequests();
+public void viewCenter();
 }
