@@ -1,5 +1,7 @@
 package com.flipfit.Application;
 
+import com.flipfit.bean.GymCustomer;
+
 public class GymCustomerFlipfitmenu
 {
     int currentcustId;
@@ -13,12 +15,15 @@ public class GymCustomerFlipfitmenu
         String name = in.nextLine();
         System.out.println("Enter your email");
         String email = in.nextLine();
+        System.out.println("Enter your Address");
+        String address = in.nextLine();
         System.out.println("Enter your password");
         String password = in.nextLine();
         System.out.println("Enter your Contact Number");
         String contactNumber = in.nextLine();
         //saving details into db
-
+        GymCustomer customer = new GymCustomer(name,address,email,contactNumber,password);
+        service.createProfile(customer);
 
        System.out.println("Registered Successfully!!");
 

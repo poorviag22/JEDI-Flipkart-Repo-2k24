@@ -9,9 +9,11 @@ public class DBConnection
 {
     public static Connection connect() throws SQLException {
         try{
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             Connection con=DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/GymCustomer","root","Nishtha@2801$");
+
+
 
             System.out.println("Database Connected");
 
@@ -19,7 +21,11 @@ public class DBConnection
 
 
 
-        }catch(Exception e){ System.out.println(e);}
+        }catch(Exception e){
+            System.out.println(e);
+            System.out.println("Database Not Connected");
+            return null;
+            }
 
     }
 }

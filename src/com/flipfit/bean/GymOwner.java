@@ -4,10 +4,19 @@ public class GymOwner {
     private int ownerId;
     private String ownerName;
     private String ownerEmailAddress;
-    private int ownerPhone;
+    private String ownerPhone;
     private int ownerGSTNum;
     private boolean isApproved;
     private String ownerAddress;
+    private String password;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public int getOwnerId() {
         return ownerId;
@@ -27,10 +36,10 @@ public class GymOwner {
     public void setOwnerEmailAddress(String ownerEmailAddress) {
         this.ownerEmailAddress = ownerEmailAddress;
     }
-    public int getOwnerPhone() {
+    public String getOwnerPhone() {
         return ownerPhone;
     }
-    public void setOwnerPhone(int ownerPhone) {
+    public void setOwnerPhone(String ownerPhone) {
         this.ownerPhone = ownerPhone;
     }
     public int getOwnerGSTNum() {
