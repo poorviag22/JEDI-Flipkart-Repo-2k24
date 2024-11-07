@@ -6,7 +6,22 @@ public class GymAdminBusinessImpl implements GymAdminBusiness {
          System.out.println("Bookings: ");
     }
     public void editProfile(){
-      System.out.println("Profile Edited: ");
+        System.out.println("Enter your UserName");
+        String userName = scanner.next();
+
+        System.out.println("Enter your Passkey");
+        String password = scanner.next();
+
+        System.out.println("Enter your Email");
+        String email = scanner.next();
+
+        System.out.println("Enter your Phone Number");
+        String phoneNumber = scanner.next();
+
+        System.out.println("Enter your Card Number");
+        String cardNumber = scanner.next();
+
+        return customerDAO.registerCustomer(userName, password, email, phoneNumber, cardNumber);
     }
     public void viewCustomers(){
       System.out.println("Customers Details: ");
