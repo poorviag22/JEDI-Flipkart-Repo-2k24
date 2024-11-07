@@ -1,14 +1,9 @@
-package com.flipfit.business;
+package com.flipfit.dao;
 
 import com.flipfit.bean.GymCustomer;
 
-public interface GymCustomerBusiness {
-    // Interface are using for declaration of the services
-
-    public void createProfile(GymCustomer customer)
-    {
-
-    }
+public interface GymCustomerDAO {
+    public void createProfile(GymCustomer customer);
     public void viewBookings(int customerId);
     public boolean waitlistStatus(int customerId);
     public boolean modifyBooking(int customerId);
