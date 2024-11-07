@@ -18,7 +18,9 @@ public class GymOwnerFlipfitmenu {
 
         int choice = in.nextInt();
 	    if(choice==1) {
-            service.registerCenter();
+            System.out.println("Enter Owner ID");
+            int id = in.nextInt();
+            service.registerCenter(id);
         }
         if(choice==2) {
             service.addnewSlot();

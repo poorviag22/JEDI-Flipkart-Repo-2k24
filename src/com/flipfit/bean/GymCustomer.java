@@ -7,7 +7,7 @@ public class GymCustomer {
     private String customerName;
     private String customerAddress;
     private String customerEmailAddress;
-    private int customerPhone;
+    private String customerPhone;
     private String password;
 
     public String getPassword() {
@@ -40,11 +40,21 @@ public class GymCustomer {
     public void setCustomerEmailAddress(String customerEmailAddress) {
         this.customerEmailAddress = customerEmailAddress;
     }
-    public int getCustomerPhone() {
+    public String getCustomerPhone() {
         return customerPhone;
     }
-    public void setCustomerPhone(int customerPhone) {
+    public void setCustomerPhone(String customerPhone) {
         this.customerPhone = customerPhone;
+    }
+
+    public GymCustomer(String name, String address, String email, String phone, String password) {
+        this.customerName = name;
+        this.customerAddress = address;
+        this.customerEmailAddress = email;
+        this.customerPhone = phone;
+        this.password = password;
+
+
     }
 
 }

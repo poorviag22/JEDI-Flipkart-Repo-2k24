@@ -33,4 +33,5 @@ public class GymCenter {
     public void setNumOfSlots(int numOfSlots) {
         this.numOfSlots = numOfSlots;
     }
+
 }

@@ -32,7 +32,12 @@ public class GymAdminFlipfitmenu {
           service.pendingRequests();
        }
          if(choice==5) {
-             service.approveOwnerRegistration();
+             java.util.Scanner scanner = new java.util.Scanner(System.in);
+             System.out.println("Provide Your Request ID for approving/rejecting");
+             int requestId=scanner.nextInt();
+             System.out.println("Select Choice : approving/rejecting");
+             String statuss=scanner.next();
+             service.approveOwnerRegistration(requestId,statuss);
          }
         if(choice==6)
           break;
