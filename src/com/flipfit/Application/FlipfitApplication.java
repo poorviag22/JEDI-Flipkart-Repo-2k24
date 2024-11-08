@@ -1,9 +1,6 @@
 package com.flipfit.Application;
 
-import com.flipfit.business.GymCustomerBusiness;
-import com.flipfit.business.GymCustomerBusinessImpl;
-import com.flipfit.business.GymOwnerBusiness;
-import com.flipfit.business.GymOwnerBusinessImpl;
+import com.flipfit.business.*;
 import com.flipfit.utils.DBConnection;
 
 import java.sql.Connection;
@@ -25,8 +22,14 @@ public class FlipfitApplication
                 String role=in.nextLine().toLowerCase();
               if(role.equals("gymadmin"))
               {
-                    GymAdminFlipfitmenu admin=new GymAdminFlipfitmenu();
-                    admin.gymadminmenu();
+                  GymAdminBusiness adminBusiness = new GymAdminBusinessImpl();
+                  int adminId = adminBusiness.login(email, pwd, role);
+                  if(adminId == -1){
+                      System.out.println("Login Failed, Check your Credentials Again !!");
+                  } else {
+                      GymAdminFlipfitmenu admin=new GymAdminFlipfitmenu();
+                      admin.gymadminmenu(adminId);
+                  }
               }
               if(role.equals("gymcustomer"))
               {
@@ -68,10 +71,30 @@ public class FlipfitApplication
          }
          public static void updatepwd()
          {
-             System.out.println("Enter the New Password :---");
              java.util.Scanner in = new java.util.Scanner(System.in);
+             System.out.println("Enter the Email Address :---");
+             String email=in.nextLine();
+             System.out.println("Enter the New Password :---");
              String pwd=in.nextLine();
-             System.out.println("Password Updated Successfully : "+ pwd);
+             System.out.println("Enter Your Role :---");
+             String role=in.nextLine().toLowerCase();
+             if(role.equals("gymadmin"))
+             {
+                 GymAdminBusiness adminBusiness = new GymAdminBusinessImpl();
+                 adminBusiness.updatepwd(email, pwd, role);
+             }
+             if(role.equals("gymcustomer"))
+             {
+                 GymCustomerBusiness customerBusiness = new GymCustomerBusinessImpl();
+                 customerBusiness.updatepwd(email, pwd, role);
+             }
+             if(role.equals("gymowner"))
+             {
+                 GymOwnerBusiness ownerBusiness = new GymOwnerBusinessImpl();
+                 ownerBusiness.updatepwd(email, pwd, role);
+
+             }
+             //System.out.println("Password Updated Successfully : "+ pwd);
 
          }
      public static void main(String agrs[])

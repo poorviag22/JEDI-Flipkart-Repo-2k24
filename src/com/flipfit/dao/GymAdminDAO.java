@@ -11,6 +11,7 @@ public interface GymAdminDAO
         public void approveOwnerRegistration(int requestId,String status);
         public void pendingRequests();
         public void viewCenter();
-
+        public int login(String email, String password, String role);
+        public void updatepwd(String email, String password, String role);
 
 }

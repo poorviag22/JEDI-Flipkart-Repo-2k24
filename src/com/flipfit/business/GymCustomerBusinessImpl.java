@@ -1,11 +1,13 @@
 package com.flipfit.business;
 
 import com.flipfit.bean.GymCustomer;
+import com.flipfit.bean.GymPayment;
 import com.flipfit.dao.GymAdminDAO;
 import com.flipfit.dao.GymAdminDAOImpl;
 import com.flipfit.dao.GymCustomerDAO;
 import com.flipfit.dao.GymCustomerDAOImpl;
 
+import java.util.Date;
 import java.util.Scanner;
 
 public class GymCustomerBusinessImpl implements GymCustomerBusiness
@@ -45,21 +47,44 @@ public class GymCustomerBusinessImpl implements GymCustomerBusiness
         return custDAO.login(email, password, role);
     }
 
+    @Override
+    public int createBooking(int customerId, int slotid, int centerId, Date date) {
+        return custDAO.createBooking(customerId, slotid, centerId, date);
+    }
+
+    @Override
+    public void viewSlots(int centerId, Date date) {
+        custDAO.viewSlots(centerId, date);
+    }
+
     public void viewBookings(int customerId){
-     System.out.println("My Bookings");
+     System.out.println("My Bookings:");
+     custDAO.viewBookings(customerId);
     }
     public boolean waitlistStatus(int customerId){
         return true;
     }
     public boolean modifyBooking(int customerId){
-     return true;
+
+        return true;
     }
 
     public boolean cancelBooking(int customerId){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Enter the booking Id to be cancelled");
+        int bookingId = in.nextInt();
+        custDAO.cancelBooking(customerId, bookingId);
         System.out.println("Booking Cancelled!!");
         return true;
     }
-    public void makepayment(int customerId){
+    public int makepayment(int bookingId, String mode){
+        GymPayment gymPayment = new GymPayment(bookingId, mode);
         System.out.println("Payment Successful");
+        return custDAO.makepayment(gymPayment);
+    }
+
+    @Override
+    public void updatepwd(String email, String password, String role) {
+        custDAO.updatepwd(email, password, role);
     }
 }

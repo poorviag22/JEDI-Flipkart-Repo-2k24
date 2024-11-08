@@ -39,18 +39,22 @@ public class GymOwnerBusinessImpl implements GymOwnerBusiness
       int centerId = scanner.nextInt();
       System.out.println("Enter your StartTime as HH:MM:SS in 24-Hour Format");
         LocalTime startTime= LocalTime.parse(scanner.next());
-      //LocalDateTime startTimestamp = scanner.next();
       System.out.println("Enter your StartTime as HH:MM:SS in 24-Hour Format");
       LocalTime endTime = LocalTime.parse(scanner.next());
       System.out.println("Enter Number of Seats:");
       int seats = scanner.nextInt();
       System.out.println("Enter Cost:");
       int cost = scanner.nextInt();
-      GymSlots slot = new GymSlots();
-      //ownerDAO.addSlots(centerId, );
+      GymSlots slot = new GymSlots(centerId, startTime, endTime, seats, cost);
+      ownerDAO.addSlots(centerId, slot);
     }
     public void deleteSlot(){
         System.out.println("Deleting slot...");
+        System.out.println("Enter your CenterId:");
+        int centerId = scanner.nextInt();
+        System.out.println("Enter your StartTime as HH:MM:SS in 24-Hour Format");
+        LocalTime startTime= LocalTime.parse(scanner.next());
+        ownerDAO.deleteSlot(centerId, startTime);
     }
     public void deleteCenter(){
         System.out.println("Deleting center...");
@@ -90,5 +94,10 @@ System.out.println("Viewing report...");
     @Override
     public int login(String email, String password, String role) {
         return ownerDAO.login(email, password, role);
+    }
+
+    @Override
+    public void updatepwd(String email, String password, String role) {
+        ownerDAO.updatepwd(email, password, role);
     }
 }

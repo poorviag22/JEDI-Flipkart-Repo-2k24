@@ -14,6 +14,7 @@ public interface GymOwnerBusiness {
     public void viewReport();
     public void createProfile(GymOwner owner);
     public int login(String email, String password, String role);
+    public void updatepwd(String email, String password, String role);
 
 
 }

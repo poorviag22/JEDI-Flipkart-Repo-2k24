@@ -3,7 +3,7 @@ package com.flipfit.bean;
 public class GymPayment {
     private int paymentID;
     private int bookingID;
-    private int mode;
+    private String mode;
     private int amount;
 
     public int getBookingID() {
@@ -14,11 +14,11 @@ public class GymPayment {
         this.bookingID = bookingID;
     }
 
-    public int getMode() {
+    public String getMode() {
         return mode;
     }
 
-    public void setMode(int mode) {
+    public void setMode(String mode) {
         this.mode = mode;
     }
 
@@ -30,7 +30,8 @@ public class GymPayment {
         this.amount = amount;
     }
 
-    public void setPaymentID(int paymentID) {
-        this.paymentID = paymentID;
+    public GymPayment(int bookingID, String mode) {
+        this.bookingID = bookingID;
+        this.mode = mode;
     }
 }

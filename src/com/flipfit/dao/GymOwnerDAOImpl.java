@@ -4,11 +4,9 @@ import com.flipfit.bean.GymOwner;
 import com.flipfit.bean.GymSlots;
 import com.flipfit.utils.DBConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public class GymOwnerDAOImpl implements GymOwnerDAO {
     private Connection connection = null;
@@ -87,7 +85,7 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
             System.out.println("Slot already exists for the given GymCenter, and given timings.");
             return; // Or throw an exception or handle the situation as per your requirement
         }
-        String sql = "INSERT INTO slot(`CenterId`,`StartTime`,`EndTime`,`NumOfSeats`,`Cost`) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO Slots(`CenterId`,`StartTime`,`EndTime`,`NumOfSeats`,`Cost`) VALUES (?,?,?,?,?)";
 
         try
         {
@@ -95,9 +93,9 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
 
                PreparedStatement statement = connection.prepareStatement(sql);
                 statement.setInt(1, centerID); // Assuming slot.getSlotID() retrieves the slot ID
-                statement.setTimestamp(2, java.sql.Timestamp.valueOf(slot.getStartTime())); // Assuming slot.getStarttime() returns LocalDateTime
-                statement.setTimestamp(3, java.sql.Timestamp.valueOf(slot.getEndTime())); // Assuming slot.getEndTime() returns a LocalTime object
-                statement.setInt(4, slot.getAvailableSeats()); // Assuming slot.getCapacity() returns the capacity
+                statement.setTime(2, Time.valueOf(slot.getStartTime())); // Assuming slot.getStarttime() returns LocalDateTime
+                statement.setTime(3, Time.valueOf(slot.getEndTime())); // Assuming slot.getEndTime() returns a LocalTime object
+                statement.setInt(4, slot.getTotalSeats());
                 statement.setInt(5, slot.getCost()); // Assuming gymCenter.getGymID() retrieves the gymID
 
                 int rowsInserted = statement.executeUpdate();
@@ -113,14 +111,14 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
     }
     public boolean isSlotExists(int centerID, GymSlots slot)
     {
-        String sql = "SELECT COUNT(*) AS count FROM slot WHERE centerID = ? AND starttime = ? AND endtime = ?";
+        String sql = "SELECT COUNT(*) AS count FROM Slots WHERE centerID = ? AND starttime = ? AND endtime = ?";
         try
         {
             connection = DBConnection.connect();
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, centerID);
-            statement.setTimestamp(2, java.sql.Timestamp.valueOf(slot.getStartTime())); // Assuming slot.getStarttime() returns LocalDateTime
-            statement.setTimestamp(3, java.sql.Timestamp.valueOf(slot.getEndTime()));
+            statement.setTime(2, Time.valueOf(slot.getStartTime())); // Assuming slot.getStarttime() returns LocalDateTime
+            statement.setTime(3, Time.valueOf(slot.getEndTime())); //
 
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next())
@@ -138,9 +136,9 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
 
 
         @Override
-        public void deleteSlot(String centerID, LocalDateTime starttime)
+        public void deleteSlot(int centerID, LocalTime starttime)
         {
-            String sql = "DELETE FROM slot WHERE centerID = ? AND starttime = ?";
+            String sql = "DELETE FROM Slots WHERE centerID = ? AND starttime = ?";
 
             try {
                 connection=DBConnection.connect();
@@ -148,8 +146,8 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
             PreparedStatement statement = connection.prepareStatement(sql);
 
                 // Convert LocalDateTime to java.sql.Timestamp for DATETIME columns
-                statement.setString(1, centerID);
-                statement.setTimestamp(2, java.sql.Timestamp.valueOf(starttime));
+                statement.setInt(1, centerID);
+                statement.setTime(2, Time.valueOf(starttime));
 
                 int rowsDeleted = statement.executeUpdate();
                 if (rowsDeleted > 0) {
@@ -262,5 +260,36 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    @Override
+    public void updatepwd(String email, String password, String role) {
+        try {
+            connection = DBConnection.connect();
+            statement =connection.prepareStatement("Select * from Registration where EmailAddress=? and role=?");
+            statement.setString(1, email);
+            statement.setString(2, role);
+            ResultSet  resultSet=statement.executeQuery();
+            if (!resultSet.next() ) {
+                System.out.println("You are not registered for this role yet!!");
+            }
+            else {
+                int id = resultSet.getInt(1);
+                statement = connection.prepareStatement("update Registration set Password=? where UserId=?");
+                statement.setString(1,password);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+
+                statement = connection.prepareStatement("update OwnerInfo set Password=? where ownerId=?");
+                statement.setString(1,password);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+            }
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

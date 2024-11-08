@@ -2,16 +2,17 @@ package com.flipfit.Application;
 
 public class GymAdminFlipfitmenu {
     com.flipfit.business.GymAdminBusiness service =new com.flipfit.business.GymAdminBusinessImpl();
-      public void gymadminmenu()
+    int currentAdminId = 0;
+    public void gymadminmenu(int adminId)
       {
            System.out.println("Welcome to FlipFit Admin Menu");
-
+           currentAdminId = adminId;
       while(true)
        {
         java.util.Scanner in = new java.util.Scanner(System.in);
 		System.out.println("1. View All Bookings");
         System.out.println("2. View All Customers");
-        System.out.println("3. Edit Profile");
+        System.out.println("3. Edit Profile"); //to be removed
         System.out.println("4. See Pending Requests");
         System.out.println("5. Approve Requests");
         System.out.println("6. Exit");
@@ -25,7 +26,7 @@ public class GymAdminFlipfitmenu {
         }
         if(choice==3) {
 
-            service.editProfile();
+            service.editProfile(adminId);
         }
        if(choice==4)
        {

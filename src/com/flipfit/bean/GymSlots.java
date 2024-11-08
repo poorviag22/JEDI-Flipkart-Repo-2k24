@@ -1,17 +1,16 @@
 package com.flipfit.bean;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 public class GymSlots {
     private int centerId;
     private int slotId;
-    private Date date;
-    private int customerId;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private int totalSeats;
-    private int availableSeats;
+    private int cost;
 
     public int getCost() {
         return cost;
@@ -21,7 +20,7 @@ public class GymSlots {
         this.cost = cost;
     }
 
-    private int cost;
+
 
     public int getTotalSeats() {
         return totalSeats;
@@ -29,14 +28,6 @@ public class GymSlots {
 
     public void setTotalSeats(int totalSeats) {
         this.totalSeats = totalSeats;
-    }
-
-    public int getAvailableSeats() {
-        return availableSeats;
-    }
-
-    public void setAvailableSeats(int availableSeats) {
-        this.availableSeats = availableSeats;
     }
 
     public int getCenterId() {
@@ -51,32 +42,28 @@ public class GymSlots {
     public void setSlotId(int slotId) {
         this.slotId = slotId;
     }
-    public Date getDate() {
-        return date;
-    }
-    public void setDate(Date date) {
-        this.date = date;
-    }
-    public int getCustomerId() {
-        return customerId;
-    }
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
-    }
 
-    public LocalDateTime getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
+    }
+
+    public GymSlots(int centerId, LocalTime StartTime, LocalTime EndTime, int totalSeats, int cost) {
+        this.centerId = centerId;
+        this.startTime = StartTime;
+        this.endTime = EndTime;
+        this.totalSeats = totalSeats;
+        this.cost = cost;
     }
 }

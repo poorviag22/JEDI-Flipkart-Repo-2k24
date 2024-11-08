@@ -34,16 +34,18 @@ public class GymAdminDAOImpl implements GymAdminDAO
         }
     }
 
+    //to be removed
     @Override
     public void editProfile(int id, String name,String email,String number,String pwd) {
         try {
             conn = DBConnection.connect();
             System.out.println("Fetching gyms owners..");
-            stmt =conn.prepareStatement("Select AdminId from CustomerBooking where AdminId ="+ id);
+            stmt =conn.prepareStatement("Select AdminId from CustomerBooking where AdminId =?");
+            stmt.setInt(1, id);
             ResultSet  resultSet=stmt.executeQuery();
 
             if (!resultSet.next() ) {
-                System.out.println("User Does Not Exist!!");
+                System.out.println("Admin Does Not Exist with that ID!!");
             }
             else {
                 statement = conn.prepareStatement("update AdminInfo set AdminId=?,Name=?,Email=?,PhoneNumber=?,Password=? where AdminId="+id);
@@ -162,6 +164,60 @@ public class GymAdminDAOImpl implements GymAdminDAO
             //ResultSet rs=stmt.executeQuery();
             while(rs.next()){
                 System.out.println(rs.getInt(1)+" "+rs.getInt(2)+" "+rs.getString(3)+" "+rs.getString(4)+" "+rs.getInt(5));
+            }
+
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public int login(String email, String password, String role) {
+        try {
+
+            conn = DBConnection.connect();
+            statement = conn.prepareStatement("select * from registration where EmailAddress = ? and Password = ? and Role = ?");
+            statement.setString(1, email);
+            statement.setString(2, password);
+            statement.setString(3, role);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("UserId");
+            } else {
+                return -1;
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    @Override
+    public void updatepwd(String email, String password, String role) {
+        try {
+            conn = DBConnection.connect();
+            stmt =conn.prepareStatement("Select * from Registration where EmailAddress=? and role=?");
+            stmt.setString(1, email);
+            stmt.setString(2, role);
+            ResultSet  resultSet=stmt.executeQuery();
+            if (!resultSet.next() ) {
+                System.out.println("You are not registered for this role yet!!");
+            }
+            else {
+                int id = resultSet.getInt(1);
+                statement = conn.prepareStatement("update Registration set Password=? where UserId=?");
+                statement.setString(1,password);
+                statement.setInt(2, id);
+                statement.executeUpdate();
+
+                statement = conn.prepareStatement("update AdminInfo set Password=? where AdminId=?");
+                statement.setString(1,password);
+                statement.setInt(2, id);
+                statement.executeUpdate();
             }
 
         } catch (SQLException se) {

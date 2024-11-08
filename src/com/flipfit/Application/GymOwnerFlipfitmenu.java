@@ -16,7 +16,7 @@ public class GymOwnerFlipfitmenu {
         System.out.println("3. Delete Slot");
         System.out.println("4. Delete Center");
         System.out.println("5. Edit Profile");
-        System.out.println("6. View Report");
+        System.out.println("6. View Report"); //?
         System.out.println("7. Exit");
 
         int choice = in.nextInt();

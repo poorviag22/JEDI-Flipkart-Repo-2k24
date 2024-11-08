@@ -12,24 +12,20 @@ public class GymAdminBusinessImpl implements GymAdminBusiness {
          System.out.println("Bookings: ");
          adminDAO.viewBookings();
     }
-    public void editProfile(){
+    public void editProfile(int id){
+        System.out.println("Enter your Name: ");
+        String name = scanner.nextLine();
 
-        System.out.println("Enter your Registered ID");
-        int id = scanner.nextInt();
-
-        System.out.println("Enter your UserName");
-        String userName = scanner.next();
-
-        System.out.println("Enter your Email");
+        System.out.println("Enter your New Email");
         String email = scanner.next();
 
-        System.out.println("Enter your Phone Number");
+        System.out.println("Enter your New Phone Number");
         String phoneNumber = scanner.next();
 
-        System.out.println("Enter your Password");
+        System.out.println("Enter your New Password");
         String pwd = scanner.next();
 
-        adminDAO.editProfile(id,userName, email,phoneNumber,pwd);
+        adminDAO.editProfile(id,name,email,phoneNumber,pwd);
     }
     public void viewCustomers(){
       System.out.println("Customers Details: ");
@@ -49,6 +45,16 @@ public class GymAdminBusinessImpl implements GymAdminBusiness {
     public void viewCenter()
     {
         adminDAO.viewCenter();
+    }
+
+    @Override
+    public int login(String email, String password, String role) {
+        return adminDAO.login(email, password, role);
+    }
+
+    @Override
+    public void updatepwd(String email, String password, String role) {
+        adminDAO.updatepwd(email, password, role);
     }
 
 }
