@@ -13,6 +13,16 @@ public class GymSlots {
     private int totalSeats;
     private int availableSeats;
 
+    public int getCost() {
+        return cost;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+
+    private int cost;
+
     public int getTotalSeats() {
         return totalSeats;
     }

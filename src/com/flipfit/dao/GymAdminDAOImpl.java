@@ -89,13 +89,34 @@ public class GymAdminDAOImpl implements GymAdminDAO
     public void approveOwnerRegistration(int requestId, String statuss){
         try {
             conn = DBConnection.connect();
-            System.out.println("Fetching gyms owners..");
-
-            statement = conn.prepareStatement("Update OwnerRequest set status="+statuss +"where RequestId="+requestId);
+            //check whether request exists
+            statement = conn.prepareStatement("Select * from OwnerRequest where RequestId=? and Status=?");
+            statement.setInt(1, requestId);
+            statement.setString(2, "pending");
+            ResultSet resultSet = statement.executeQuery();
+            if(!resultSet.next()){
+                System.out.println("Such Pending Request Does Not Exist!!");
+            }
+            //update the status
+            int ownerId = resultSet.getInt(2);
+            String centerName = resultSet.getString(4);
+            String location = resultSet.getString(5);
+            int NumOfSlots = resultSet.getInt(6);
+            statement = conn.prepareStatement("Update OwnerRequest set status=? where RequestId=?");
+            statement.setString(1, statuss);
+            statement.setInt(2, requestId);
             statement.executeUpdate();
+
+            if(statuss.equals("rejected")){
+                return;
+            }
             //add center to center table
-
-
+            statement = conn.prepareStatement("insert into GymCenters(`OwnerId`,`CenterName`,`Location`,`NumOfSlots`) values (?,?,?,?)");
+            statement.setInt(1, ownerId);
+            statement.setString(2, centerName);
+            statement.setString(3, location);
+            statement.setInt(4, NumOfSlots);
+            statement.executeUpdate();
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
@@ -109,14 +130,16 @@ public class GymAdminDAOImpl implements GymAdminDAO
             conn = DBConnection.connect();
             System.out.println("Fetching gyms owners..");
 
-            statement = conn.prepareStatement("Select * from OwnerRequest where status='Pending'");
+            statement = conn.prepareStatement("Select * from OwnerRequest where Status=?");
+            statement.setString(1, "pending");
 
             ResultSet rs=statement.executeQuery();
 
             //PreparedStatement stmt=con.prepareStatement("select * from emp");
             //ResultSet rs=stmt.executeQuery();
+            System.out.println("RequestId OwnerId Status CenterName CenterLocation NumOfSlots");
             while(rs.next()){
-                System.out.println(rs.getInt(1)+" "+rs.getInt(2)+" "+rs.getInt(3)+" "+rs.getString(4));
+                System.out.println(rs.getInt(1)+" "+rs.getInt(2)+" "+rs.getString(3)+" "+rs.getString(4)+" "+rs.getString(5)+" "+rs.getInt(6));
             }
 
         } catch (SQLException se) {
@@ -130,7 +153,7 @@ public class GymAdminDAOImpl implements GymAdminDAO
     public void viewCenter() {
         try {
             conn = DBConnection.connect();
-            System.out.println("Fetching gyms owners..");
+            System.out.println("Fetching gyms centers..");
 
             statement = conn.prepareStatement("Select * from GymCenters");
             ResultSet rs=statement.executeQuery();

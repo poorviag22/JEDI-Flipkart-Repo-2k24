@@ -1,10 +1,13 @@
 package com.flipfit.Application;
 
-public class GymOwnerFlipfitmenu {
-    com.flipfit.business.GymOwnerBusiness service =new com.flipfit.business.GymOwnerBusinessImpl();
-    public void gymownermenu()
-    {
+import com.flipfit.bean.GymOwner;
 
+public class GymOwnerFlipfitmenu {
+    int currentownerId = 0;
+    com.flipfit.business.GymOwnerBusiness service =new com.flipfit.business.GymOwnerBusinessImpl();
+    public void gymownermenu(int ownerId)
+    {
+        currentownerId = ownerId;
         while(true)
        {System.out.println("Welcome to FlipFit Owner Menu");
         java.util.Scanner in = new java.util.Scanner(System.in);
@@ -18,9 +21,7 @@ public class GymOwnerFlipfitmenu {
 
         int choice = in.nextInt();
 	    if(choice==1) {
-            System.out.println("Enter Owner ID");
-            int id = in.nextInt();
-            service.registerCenter(id);
+            service.registerCenter(currentownerId);
         }
         if(choice==2) {
             service.addnewSlot();
@@ -33,7 +34,7 @@ public class GymOwnerFlipfitmenu {
            service.deleteCenter();
        }
          if(choice==5) {
-             service.editProfile();
+             service.editProfile(currentownerId);
          }
          if(choice==6) {
              service.viewReport();
@@ -53,11 +54,12 @@ public class GymOwnerFlipfitmenu {
         String email = in.nextLine();
         System.out.println("Enter your password");
         String password = in.nextLine();
+        System.out.println("Enter your Address");
+        String address = in.nextLine();
         System.out.println("Enter your Contact Number");
         String contactNumber = in.nextLine();
-        //saving details into db
-
-
+        GymOwner gymOwner = new GymOwner(name, email, contactNumber, address, password);
+        service.createProfile(gymOwner);
        System.out.println("Registered Successfully!!");
 
     }

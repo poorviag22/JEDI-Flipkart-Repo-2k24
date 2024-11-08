@@ -1,35 +1,54 @@
 package com.flipfit.Application;
 
+import com.flipfit.business.GymCustomerBusiness;
+import com.flipfit.business.GymCustomerBusinessImpl;
+import com.flipfit.business.GymOwnerBusiness;
+import com.flipfit.business.GymOwnerBusinessImpl;
+import com.flipfit.utils.DBConnection;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public class FlipfitApplication
 {
        public static void login()
          {
               java.util.Scanner in = new java.util.Scanner(System.in);
-                System.out.println("Enter the User Name :---");
+                System.out.println("Enter the Email Address :---");
                 in = new java.util.Scanner(System.in);
-                 String name=in.nextLine();
+                 String email=in.nextLine();
                 System.out.println("Enter the Password :----");
                 in = new java.util.Scanner(System.in);
                 String pwd=in.nextLine();
                 System.out.println("Enter the ROLE: (GymCustomer/GymOwner/GymAdmin)");
                 in = new java.util.Scanner(System.in);
                 String role=in.nextLine().toLowerCase();
-
-              if(role.equals("admin"))
+              if(role.equals("gymadmin"))
               {
                     GymAdminFlipfitmenu admin=new GymAdminFlipfitmenu();
                     admin.gymadminmenu();
               }
-              if(role.equals("user"))
+              if(role.equals("gymcustomer"))
               {
-                  GymCustomerFlipfitmenu customer=new GymCustomerFlipfitmenu();
-                  int id=0;//after authentication
-                  customer.gymcustomermenu(id);
+                  GymCustomerBusiness customerBusiness = new GymCustomerBusinessImpl();
+                  int custId = customerBusiness.login(email, pwd, role);
+                  if(custId == -1){
+                      System.out.println("Login Failed, Check Your Credentials Again !!");
+                  } else {
+                      GymCustomerFlipfitmenu customer=new GymCustomerFlipfitmenu();
+                      customer.gymcustomermenu(custId);
+                  }
               }
-              if(role.equals("owner"))
+              if(role.equals("gymowner"))
               {
-                GymOwnerFlipfitmenu owner=new GymOwnerFlipfitmenu();
-                owner.gymownermenu();
+                  GymOwnerBusiness ownerBusiness = new GymOwnerBusinessImpl();
+                  int ownerId = ownerBusiness.login(email, pwd, role);
+                  if(ownerId == -1){
+                      System.out.println("Login Failed, Check Your Credentials Again !!");
+                  } else {
+                      GymOwnerFlipfitmenu owner = new GymOwnerFlipfitmenu();
+                      owner.gymownermenu(ownerId);
+                  }
 
               }
 

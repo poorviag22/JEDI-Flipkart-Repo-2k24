@@ -13,14 +13,59 @@ import java.time.LocalDateTime;
 public class GymOwnerDAOImpl implements GymOwnerDAO {
     private Connection connection = null;
     private PreparedStatement statement = null;
-    private PreparedStatement stmt = null;
+    //private PreparedStatement stmt = null;
+
     @Override
-    public void registerCenter(int requestId,String centerName,String location,int slots)
+    public void createProfile(GymOwner gymOwner) {
+        try {
+            connection = DBConnection.connect();
+            System.out.println("Adding User Profile");
+            statement = connection.prepareStatement("insert into User(`Name`,`Email`,`PhoneNumber`,`Role`,`Address`) values (?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
+            statement.setString(1, gymOwner.getOwnerName());
+            statement.setString(2, gymOwner.getOwnerEmailAddress());
+            statement.setString(3, gymOwner.getOwnerPhone());
+            statement.setString(4, "gymowner");
+            statement.setString(5, gymOwner.getOwnerAddress());
+            int rowsAffected = statement.executeUpdate();
+            int ownerId = 0;
+            if (rowsAffected > 0) {
+                // Retrieve the generated customerId
+                ResultSet generatedKeys = statement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    ownerId = generatedKeys.getInt(1);
+                }
+            }
+
+            statement = connection.prepareStatement("insert into OwnerInfo values (?,?,?,?,?,?)");
+            statement.setInt(1,ownerId);
+            statement.setString(2, gymOwner.getOwnerName());
+            statement.setString(3, gymOwner.getOwnerEmailAddress());
+            statement.setString(4, gymOwner.getOwnerAddress());
+            statement.setString(5, gymOwner.getOwnerPhone());
+            statement.setString(6, gymOwner.getPassword());
+            statement.executeUpdate();
+
+            statement = connection.prepareStatement("insert into Registration values (?,?,?,?)");
+            statement.setInt(1,ownerId);
+            statement.setString(2, gymOwner.getOwnerEmailAddress());
+            statement.setString(3, gymOwner.getPassword());
+            statement.setString(4, "gymowner");
+            statement.executeUpdate();
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void registerCenter(int ownerId, String centerName,String location,int slots)
     {
         try {
             connection = DBConnection.connect();
-            statement = connection.prepareStatement("insert into OwnerRequest values (?,?,?,?)");
-            statement.setInt(1, requestId);
+            statement = connection.prepareStatement("insert into OwnerRequest(`OwnerId`,`CenterName`,`CenterLocation`,`NumOfSlots`) values (?,?,?,?)");
+            statement.setInt(1, ownerId);
             statement.setString(2, centerName);
             statement.setString(3, location);
             statement.setInt(4, slots);
@@ -39,24 +84,21 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
         // Check if the same slot is already present in the slot table for the given gymCenter
         if (isSlotExists(centerID, slot))
         {
-            System.out.println("Slot already exists for the given GymCenter.");
+            System.out.println("Slot already exists for the given GymCenter, and given timings.");
             return; // Or throw an exception or handle the situation as per your requirement
         }
-
-        String sql = "INSERT INTO slot (slotID, starttime, endtime, capacity, centerID) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO slot(`CenterId`,`StartTime`,`EndTime`,`NumOfSeats`,`Cost`) VALUES (?,?,?,?,?)";
 
         try
         {
             connection = DBConnection.connect();
 
                PreparedStatement statement = connection.prepareStatement(sql);
-
-
-                statement.setInt(1, slot.getSlotId()); // Assuming slot.getSlotID() retrieves the slot ID
+                statement.setInt(1, centerID); // Assuming slot.getSlotID() retrieves the slot ID
                 statement.setTimestamp(2, java.sql.Timestamp.valueOf(slot.getStartTime())); // Assuming slot.getStarttime() returns LocalDateTime
                 statement.setTimestamp(3, java.sql.Timestamp.valueOf(slot.getEndTime())); // Assuming slot.getEndTime() returns a LocalTime object
                 statement.setInt(4, slot.getAvailableSeats()); // Assuming slot.getCapacity() returns the capacity
-                statement.setInt(5, centerID); // Assuming gymCenter.getGymID() retrieves the gymID
+                statement.setInt(5, slot.getCost()); // Assuming gymCenter.getGymID() retrieves the gymID
 
                 int rowsInserted = statement.executeUpdate();
                 if (rowsInserted > 0) {
@@ -127,12 +169,12 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
     @Override
             public void deleteCenter(int centerID)
     {
-                String sql = "DELETE FROM  GymCenters WHERE centerID = ? ";
+                String sql = "DELETE FROM GymCenters WHERE centerID = ? ";
 
                 try {
                     connection=DBConnection.connect();
 
-                PreparedStatement statement = connection.prepareStatement(sql);
+                    PreparedStatement statement = connection.prepareStatement(sql);
                     statement.setInt(1, centerID);
 
 
@@ -154,19 +196,39 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
     @Override
         public boolean editProfile(GymOwner gymOwner)
         {
-            String sql = "UPDATE OwnerInfo SET OwnerId= ?, Name = ?, Email = ?, PhoneNumber = ?, Password=?, WHERE OwnerId = ?";
+            String sql = "UPDATE OwnerInfo SET Name = ?, Email = ?, Address = ?, PhoneNumber = ?, Password=? WHERE OwnerId = ?";
 
             try {
                 connection=DBConnection.connect();
 
             PreparedStatement statement = connection.prepareStatement(sql);
-                statement.setInt(1, gymOwner.getOwnerId());
-                statement.setString(2, gymOwner.getOwnerName());
-                statement.setString(3, gymOwner.getOwnerEmailAddress());
+                statement.setString(1, gymOwner.getOwnerName());
+                statement.setString(2, gymOwner.getOwnerEmailAddress());
+                statement.setString(3, gymOwner.getOwnerAddress());
                 statement.setString(4, gymOwner.getOwnerPhone());
                 statement.setString(5,gymOwner.getPassword());
+                System.out.println(gymOwner.getOwnerId());
+                statement.setInt(6, gymOwner.getOwnerId());
                 int rowsUpdated = statement.executeUpdate();
-                return rowsUpdated > 0;
+                if (rowsUpdated <= 0) {
+                    return false;
+                }
+
+                statement = connection.prepareStatement("UPDATE User SET Name = ?, Email = ?, Address = ?, PhoneNumber = ? WHERE UserId = ?");
+                statement.setString(1, gymOwner.getOwnerName());
+                statement.setString(2, gymOwner.getOwnerEmailAddress());
+                statement.setString(3, gymOwner.getOwnerAddress());
+                statement.setString(4, gymOwner.getOwnerPhone());
+                statement.setInt(5, gymOwner.getOwnerId());
+                statement.executeUpdate();
+
+                statement = connection.prepareStatement("UPDATE Registration SET EmailAddress = ?, Password = ? WHERE UserId = ?");
+                statement.setString(1, gymOwner.getOwnerEmailAddress());
+                statement.setString(2, gymOwner.getPassword());
+                statement.setInt(3, gymOwner.getOwnerId());
+                statement.executeUpdate();
+
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -177,5 +239,28 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
     public void viewReport()
     {
 
+    }
+
+    @Override
+    public int login(String email, String password, String role) {
+        try {
+
+            connection = DBConnection.connect();
+            statement = connection.prepareStatement("select * from registration where EmailAddress = ? and Password = ? and Role = ?");
+            statement.setString(1, email);
+            statement.setString(2, password);
+            statement.setString(3, role);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("UserId");
+            } else {
+                return -1;
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 }

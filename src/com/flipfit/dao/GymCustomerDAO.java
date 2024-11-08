@@ -5,6 +5,8 @@ import com.flipfit.bean.GymPayment;
 
 public interface GymCustomerDAO {
     public void createProfile(GymCustomer customer);
+    public boolean editProfile(GymCustomer customer);
+    public int login(String email, String password, String role);
     public void viewBookings(int customerId);
     public boolean waitlistStatus(int customerId);
     public int modifyBooking(int bookingID , int customerID , int centerID , int slotID) ;

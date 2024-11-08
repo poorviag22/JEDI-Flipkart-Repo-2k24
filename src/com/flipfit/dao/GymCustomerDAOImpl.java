@@ -22,24 +22,37 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
         try {
             conn = DBConnection.connect();
             System.out.println("Adding User Profile");
+            statement = conn.prepareStatement("insert into User(`Name`,`Email`,`PhoneNumber`,`Role`,`Address`) values (?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
+            statement.setString(1, customer.getCustomerName());
+            statement.setString(2, customer.getCustomerEmailAddress());
+            statement.setString(3, customer.getCustomerPhone());
+            statement.setString(4, "gymcustomer");
+            statement.setString(5, customer.getCustomerAddress());
+            int rowsAffected = statement.executeUpdate();
+            int customerId = 0;
+            if (rowsAffected > 0) {
+                // Retrieve the generated customerId
+                ResultSet generatedKeys = statement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    customerId = generatedKeys.getInt(1);
+                }
+            }
+
             statement = conn.prepareStatement("insert into Customer values (?,?,?,?,?,?)");
-            statement.setInt(1, 100);
+            statement.setInt(1,customerId);
             statement.setString(2, customer.getCustomerName());
             statement.setString(3, customer.getCustomerEmailAddress());
             statement.setString(4, customer.getCustomerAddress());
             statement.setString(5, customer.getCustomerPhone());
             statement.setString(6, customer.getPassword());
+            statement.executeUpdate();
 
-            System.out.println(statement.executeUpdate());
-            /* statement = conn.prepareStatement("insert into User values (?,?,?,?,?,?)");
-            statement.setString(1, customer.getCustomerName());
+            statement = conn.prepareStatement("insert into Registration values (?,?,?,?)");
+            statement.setInt(1,customerId);
             statement.setString(2, customer.getCustomerEmailAddress());
-            statement.setString(3, customer.getCustomerAddress());
-            statement.setString(4, customer.getCustomerPhone());
-            statement.setString(5, customer.getPassword());
-//          To be Updated , role and other stuff needs to checked
-            statement.executeUpdate();*/
-
+            statement.setString(3, customer.getPassword());
+            statement.setString(4, "gymcustomer");
+            statement.executeUpdate();
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
@@ -47,6 +60,67 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
         }
 
 
+    }
+
+    @Override
+    public boolean editProfile(GymCustomer customer) {
+        String sql = "UPDATE Customer SET Name = ?, Email = ?, Address = ?, PhoneNumber = ?, Password=? WHERE CustId = ?";
+
+        try {
+            conn=DBConnection.connect();
+
+            PreparedStatement statement = conn.prepareStatement(sql);
+            statement.setString(1, customer.getCustomerName());
+            statement.setString(2, customer.getCustomerEmailAddress());
+            statement.setString(3, customer.getCustomerAddress());
+            statement.setString(4, customer.getCustomerPhone());
+            statement.setString(5,customer.getPassword());
+            statement.setInt(6, customer.getCustomerId());
+            int rowsUpdated = statement.executeUpdate();
+            if(rowsUpdated <= 0) {
+                return false;
+            }
+            statement = conn.prepareStatement("UPDATE User SET Name = ?, Email = ?, Address = ?, PhoneNumber = ? WHERE UserId = ?");
+            statement.setString(1, customer.getCustomerName());
+            statement.setString(2, customer.getCustomerEmailAddress());
+            statement.setString(3, customer.getCustomerAddress());
+            statement.setString(4, customer.getCustomerPhone());
+            statement.setInt(5, customer.getCustomerId());
+            statement.executeUpdate();
+
+            statement = conn.prepareStatement("UPDATE Registration SET EmailAddress = ?, Password = ? WHERE UserId = ?");
+            statement.setString(1, customer.getCustomerEmailAddress());
+            statement.setString(2, customer.getPassword());
+            statement.setInt(3, customer.getCustomerId());
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public int login(String email, String password, String role) {
+        try {
+
+            conn = DBConnection.connect();
+            statement = conn.prepareStatement("select * from registration where EmailAddress = ? and Password = ? and Role = ?");
+            statement.setString(1, email);
+            statement.setString(2, password);
+            statement.setString(3, role);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt("UserId");
+            } else {
+                return -1;
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     @Override

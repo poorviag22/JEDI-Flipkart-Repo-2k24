@@ -42,7 +42,8 @@ public class GymCustomerFlipfitmenu
         System.out.println("4. Cancel Booking");
         System.out.println("5. Check Waitlist Status");
         System.out.println("6. Make Payment");
-        System.out.println("7. Exit");
+        System.out.println("7. Edit Profile");
+        System.out.println("8. Exit");
 
         int choice = in.nextInt();
 	    if(choice==1) {
@@ -64,7 +65,10 @@ public class GymCustomerFlipfitmenu
          if(choice==6) {
              service.makepayment(currentcustId);
          }
-        if(choice==7)
+         if(choice==7) {
+             service.editProfile(currentcustId);
+         }
+        if(choice==8)
           break;
     }
 

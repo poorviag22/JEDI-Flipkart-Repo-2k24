@@ -41,12 +41,14 @@ public class GymAdminBusinessImpl implements GymAdminBusiness {
     }
 
     public void pendingRequests()
-{
-System.out.println("Pending Requests: ");
-}
-public void viewCenter()
-{
+    {
 
-}
+        System.out.println("Pending Requests: ");
+        adminDAO.pendingRequests();
+    }
+    public void viewCenter()
+    {
+        adminDAO.viewCenter();
+    }
 
 }

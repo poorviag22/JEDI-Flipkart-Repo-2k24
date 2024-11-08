@@ -5,8 +5,8 @@ public class GymOwner {
     private String ownerName;
     private String ownerEmailAddress;
     private String ownerPhone;
-    private int ownerGSTNum;
-    private boolean isApproved;
+    //private int ownerGSTNum;
+    //private boolean isApproved;
     private String ownerAddress;
     private String password;
 
@@ -42,7 +42,7 @@ public class GymOwner {
     public void setOwnerPhone(String ownerPhone) {
         this.ownerPhone = ownerPhone;
     }
-    public int getOwnerGSTNum() {
+    /*public int getOwnerGSTNum() {
         return ownerGSTNum;
     }
     public void setOwnerGSTNum(int ownerGSTNum) {
@@ -54,10 +54,18 @@ public class GymOwner {
     public void setApproved(boolean isApproved) {
         this.isApproved = isApproved;
     }
+     */
     public String getOwnerAddress() {
         return ownerAddress;
     }
     public void setOwnerAddress(String ownerAddress) {
         this.ownerAddress = ownerAddress;
+    }
+    public GymOwner(String ownerName, String ownerEmailAddress, String ownerPhone, String ownerAddress, String password) {
+        this.ownerName = ownerName;
+        this.ownerEmailAddress = ownerEmailAddress;
+        this.ownerPhone = ownerPhone;
+        this.ownerAddress = ownerAddress;
+        this.password = password;
     }
 }

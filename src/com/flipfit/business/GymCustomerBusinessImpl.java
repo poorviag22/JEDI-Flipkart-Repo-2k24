@@ -17,6 +17,34 @@ public class GymCustomerBusinessImpl implements GymCustomerBusiness
       System.out.println("Profile Created!!");
       custDAO.createProfile(customer);
     }
+
+    @Override
+    public boolean editProfile(int customerId) {
+        java.util.Scanner in = new java.util.Scanner(System.in);
+        System.out.println("Editing profile ...");
+        System.out.println("Enter your new name");
+        String name = in.nextLine();
+        System.out.println("Enter your new email");
+        String email = in.nextLine();
+        System.out.println("Enter your new Address");
+        String address = in.nextLine();
+        System.out.println("Enter your new password");
+        String password = in.nextLine();
+        System.out.println("Enter your new Contact Number");
+        String contactNumber = in.nextLine();
+        GymCustomer customer = new GymCustomer(name,address,email,contactNumber,password);
+        customer.setCustomerId(customerId);
+        custDAO.editProfile(customer);
+
+        System.out.println("Registered Successfully!!");
+        return false;
+    }
+
+    @Override
+    public int login(String email, String password, String role) {
+        return custDAO.login(email, password, role);
+    }
+
     public void viewBookings(int customerId){
      System.out.println("My Bookings");
     }
