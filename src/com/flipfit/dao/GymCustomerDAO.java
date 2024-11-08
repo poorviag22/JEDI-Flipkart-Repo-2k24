@@ -9,6 +9,6 @@ public interface GymCustomerDAO {
     public boolean waitlistStatus(int customerId);
     public int modifyBooking(int bookingID , int customerID , int centerID , int slotID) ;
     public int createBooking(int customerID , int centerID , int slotID);
-    public boolean cancelBooking(int customerId);
+    public boolean cancelBooking(int customerId , int customerID );
     public boolean makepayment(GymPayment paymentData);
 }

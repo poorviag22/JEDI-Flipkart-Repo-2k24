@@ -1,6 +1,10 @@
 
 
 package com.flipfit.dao;
+import com.flipfit.exception.DBconnectionException;
+import com.flipfit.exception.InvalidInputException;
+import com.flipfit.exception.ResourceNotFoundException;
+import com.flipfit.exception.UnauthorisedAccessException;
 import com.flipfit.utils.DBConnection;
 import com.flipfit.bean.GymBooking;
 import com.flipfit.bean.GymCustomer;
@@ -15,16 +19,51 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
     private Connection conn = null;
     private PreparedStatement statement = null;
 
-    //    Name , Email , Address , Phone Number , Password
-    @Override
 
+    public boolean IfBoookingExists(int bookingID) {
+        try {
+            conn = DBConnection.connect();
+            statement = conn.prepareStatement("select * from bookings where BookingId = ?");
+            statement.setInt(1, bookingID);  // Set the bookingID parameter
+            // Execute the query
+            ResultSet resultSet = statement.executeQuery();
+            if (!resultSet.next()) {
+                return false;
+            }
+            return true;
+        } catch (SQLException| DBconnectionException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+    public boolean IfCustomerExists(int customerID) {
+        try {
+            conn = DBConnection.connect();
+            statement = conn.prepareStatement("select * from Customer where CustId = ?");
+            statement.setInt(1, customerID);  // Set the bookingID parameter
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException| DBconnectionException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+        //    Name , Email , Address , Phone Number , Password
+    @Override
     public void createProfile(GymCustomer customer) {
         try {
-//          1. Check if email is valid   : invalidInput
-//          2. User already exists using email : invalidRequest
             conn = DBConnection.connect();
             System.out.println("Adding User Profile");
+            String emailAddress = customer.getCustomerEmailAddress();
+
+            if(emailAddress == null || !emailAddress.contains("@") || !emailAddress.contains("."))
+                throw new InvalidInputException("Email address cannot be null or empty");
+
+
+
             statement = conn.prepareStatement("insert into Customer values (?,?,?,?,?,?)");
+
             statement.setInt(1, 100);
             statement.setString(2, customer.getCustomerName());
             statement.setString(3, customer.getCustomerEmailAddress());
@@ -42,19 +81,15 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
 //          To be Updated , role and other stuff needs to checked
             statement.executeUpdate();*/
 
-        } catch (SQLException se) {
+        } catch (SQLException | InvalidInputException | DBconnectionException se ) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
 
     }
-
     @Override
     public void viewBookings(int customerId) {
         try {
-
 
             conn = DBConnection.connect();
             System.out.println("Adding User Profile");
@@ -81,7 +116,8 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
     public boolean waitlistStatus(int bookingID) {
         try {
 //          Waitlist table :  BookingID , WaitListed Status
-//
+            if(!IfBoookingExists(bookingID))
+                throw new ResourceNotFoundException("Booking ID already exists");
 
             conn = DBConnection.connect();
             System.out.println("Checking Waitlisted");
@@ -99,15 +135,17 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
             e.printStackTrace();
             return false;
         }
+
+
     }
 
 
     @Override
-    public boolean cancelBooking(int bookingID ) {
+    public boolean cancelBooking(int bookingID , int customerID ) {
         try {
-
 //          unauthAccess : to make sure user is cancelling their own bookings only . (take userid as parms also)
-
+            if(!IfCustomerExists(customerID))
+                throw new UnauthorisedAccessException("UnAutherised Access!");
             conn = DBConnection.connect();
             System.out.println("Cancel Booking...");
             statement = conn.prepareStatement("DELETE FROM Bookings where BookingID=?");
@@ -161,7 +199,7 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
     public int modifyBooking(int bookingID, int customerID, int centerID, int slotID) {
 //  unauthAccess, ResourceNotFound .
         try {
-            cancelBooking(bookingID);
+            cancelBooking(bookingID , customerID );
             int newBookingID = createBooking(customerID, centerID, slotID);
             return newBookingID;
         } catch (Exception e) {
@@ -171,8 +209,11 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
     }
 
     @Override
-    public boolean makepayment(GymPayment paymentData) {
+    public boolean makepayment(GymPayment paymentData , int CustomerID) {
         try {
+
+            if(!IfCustomerExists(CustomerID))
+                throw new UnauthorisedAccessException("UnAutherised Access!");
 
 //          unauthAccess, resourceNotFound(bookingID),
             conn = DBConnection.connect();
