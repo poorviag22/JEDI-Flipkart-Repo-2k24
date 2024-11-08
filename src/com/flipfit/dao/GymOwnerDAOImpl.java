@@ -2,6 +2,7 @@ package com.flipfit.dao;
 
 import com.flipfit.bean.GymOwner;
 import com.flipfit.bean.GymSlots;
+import com.flipfit.exception.DBconnectionException;
 import com.flipfit.utils.DBConnection;
 
 import java.sql.Connection;
@@ -25,11 +26,9 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
             statement.setString(3, location);
             statement.setInt(4, slots);
             statement.executeUpdate();
-
 //            payment ID needs to auto generated and Mode has to be added in the table and status we need to add here
         } catch (Exception e) {
             e.printStackTrace();
-
         }
     }
 
@@ -47,7 +46,7 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
 
         try
         {
-            connection = DBConnection.connect();
+              connection = DBConnection.connect();
 
                PreparedStatement statement = connection.prepareStatement(sql);
 
@@ -67,6 +66,8 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (DBconnectionException e) {
+            throw new RuntimeException(e);
         }
     }
     public boolean isSlotExists(int centerID, GymSlots slot)
@@ -87,7 +88,7 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
                 return count > 0;
             }
       }
-        catch (SQLException e)
+        catch (SQLException | DBconnectionException e)
         {
             throw new RuntimeException(e);
         }
@@ -121,6 +122,8 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
             }
             catch (SQLException e) {
                 e.printStackTrace();
+            } catch (DBconnectionException e) {
+                throw new RuntimeException(e);
             }
         }
 
@@ -148,8 +151,10 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
 
                 } catch (SQLException e) {
                     e.printStackTrace();
+                } catch (DBconnectionException e) {
+                    throw new RuntimeException(e);
                 }
-            }
+    }
 
     @Override
         public boolean editProfile(GymOwner gymOwner)
@@ -167,7 +172,7 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
                 statement.setString(5,gymOwner.getPassword());
                 int rowsUpdated = statement.executeUpdate();
                 return rowsUpdated > 0;
-            } catch (SQLException e) {
+            } catch (SQLException | DBconnectionException e) {
                 e.printStackTrace();
             }
             return false;

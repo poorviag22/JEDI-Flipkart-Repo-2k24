@@ -20,6 +20,8 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
 
     public void createProfile(GymCustomer customer) {
         try {
+//          1. Check if email is valid   : invalidInput
+//          2. User already exists using email : invalidRequest
             conn = DBConnection.connect();
             System.out.println("Adding User Profile");
             statement = conn.prepareStatement("insert into Customer values (?,?,?,?,?,?)");
@@ -53,6 +55,7 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
     public void viewBookings(int customerId) {
         try {
 
+
             conn = DBConnection.connect();
             System.out.println("Adding User Profile");
             statement = conn.prepareStatement("select * from bookings where CustomerId = ?");
@@ -78,7 +81,7 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
     public boolean waitlistStatus(int bookingID) {
         try {
 //          Waitlist table :  BookingID , WaitListed Status
-
+//
 
             conn = DBConnection.connect();
             System.out.println("Checking Waitlisted");
@@ -100,10 +103,13 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
 
 
     @Override
-    public boolean cancelBooking(int bookingID) {
+    public boolean cancelBooking(int bookingID ) {
         try {
+
+//          unauthAccess : to make sure user is cancelling their own bookings only . (take userid as parms also)
+
             conn = DBConnection.connect();
-            System.out.println("Cancel Booking ");
+            System.out.println("Cancel Booking...");
             statement = conn.prepareStatement("DELETE FROM Bookings where BookingID=?");
             statement.setInt(1, bookingID);
             statement.executeQuery();
@@ -122,6 +128,11 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
         int bookingID = 10;
 //    customerID, BookingID,centerID,SlotID,Date(auto gen)
         try {
+
+//          1. centerID Check and SlotID check
+//          2. Booking already exists
+
+
             conn = DBConnection.connect();
             System.out.println("Creating New Booking ");
             statement = conn.prepareStatement("insert into bookings values (?,?,?,?)");
@@ -148,7 +159,7 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
 
     @Override
     public int modifyBooking(int bookingID, int customerID, int centerID, int slotID) {
-
+//  unauthAccess, ResourceNotFound .
         try {
             cancelBooking(bookingID);
             int newBookingID = createBooking(customerID, centerID, slotID);
@@ -162,6 +173,8 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
     @Override
     public boolean makepayment(GymPayment paymentData) {
         try {
+
+//          unauthAccess, resourceNotFound(bookingID),
             conn = DBConnection.connect();
             System.out.println("Making Payment ");
             statement = conn.prepareStatement("insert into payment values (?,?,?,?)");

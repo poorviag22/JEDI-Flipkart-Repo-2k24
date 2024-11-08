@@ -1,5 +1,11 @@
 package com.flipfit.Application;
 
+import com.flipfit.exception.DBconnectionException;
+import com.flipfit.utils.DBConnection;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
 public class FlipfitApplication
 {
        public static void login()
@@ -55,9 +61,10 @@ public class FlipfitApplication
              System.out.println("Password Updated Successfully : "+ pwd);
 
          }
-     public static void main(String agrs[])
-     {
+     public static void main(String agrs[]) throws SQLException, DBconnectionException {
 
+           Connection conn = null;
+           conn = DBConnection.connect();
 
     int choice;
      while(true)
