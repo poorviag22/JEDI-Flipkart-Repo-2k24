@@ -10,5 +10,5 @@ public interface GymCustomerDAO {
     public int modifyBooking(int bookingID , int customerID , int centerID , int slotID) ;
     public int createBooking(int customerID , int centerID , int slotID);
     public boolean cancelBooking(int customerId , int customerID );
-    public boolean makepayment(GymPayment paymentData);
+    public boolean makepayment(GymPayment paymentData, int CustomerID);
 }
