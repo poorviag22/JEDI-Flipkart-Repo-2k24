@@ -2,6 +2,10 @@ package com.flipfit.dao;
 
 import com.flipfit.bean.GymOwner;
 import com.flipfit.bean.GymSlots;
+import com.flipfit.exceptions.DBConnectionException;
+import com.flipfit.exceptions.DataEntryFailedException;
+import com.flipfit.exceptions.InvalidCredentialsException;
+import com.flipfit.exceptions.ResourceAlreadyExistsException;
 import com.flipfit.utils.DBConnection;
 
 import java.sql.*;
@@ -13,7 +17,7 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
     private PreparedStatement statement = null;
 
     @Override
-    public boolean createProfile(GymOwner gymOwner) {
+    public boolean createProfile(GymOwner gymOwner) throws InvalidCredentialsException, DataEntryFailedException {
         try {
             connection = DBConnection.connect();
 
@@ -21,7 +25,7 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
             statement.setString(1, gymOwner.getOwnerEmailAddress());
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return false;
+                throw new InvalidCredentialsException("User already exists with this email address");
             }
             System.out.println("Adding User Profile");
             statement = connection.prepareStatement("insert into User(`Name`,`Email`,`PhoneNumber`,`Role`,`Address`) values (?,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
@@ -38,6 +42,8 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
                 if (generatedKeys.next()) {
                     ownerId = generatedKeys.getInt(1);
                 }
+            } else {
+                throw new DataEntryFailedException("Failed Adding User Details to User Database");
             }
 
             statement = connection.prepareStatement("insert into OwnerInfo values (?,?,?,?,?,?)");
@@ -58,14 +64,14 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
             return true;
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return false;
     }
 
     @Override
-    public void registerCenter(int ownerId, String centerName, String location, int slots) {
+    public boolean registerCenter(int ownerId, String centerName, String location, int slots) throws DataEntryFailedException{
         try {
             connection = DBConnection.connect();
             statement = connection.prepareStatement("insert into OwnerRequest(`OwnerId`,`CenterName`,`CenterLocation`,`NumOfSlots`) values (?,?,?,?)");
@@ -73,19 +79,25 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
             statement.setString(2, centerName);
             statement.setString(3, location);
             statement.setInt(4, slots);
-            statement.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected <= 0) {
+                throw new DataEntryFailedException("Data Entry Failed into Owner Request Database");
+            } else {
+                return true;
+            }
+        } catch (SQLException se) {
+            se.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
+        return false;
     }
 
     @Override
-    public void addSlots(int centerID, GymSlots slot) {
+    public boolean addSlots(int centerID, GymSlots slot) throws ResourceAlreadyExistsException, DataEntryFailedException {
         // Check if the same slot is already present in the slot table for the given gymCenter
         if (isSlotExists(centerID, slot)) {
-            System.out.println("Slot already exists for the given GymCenter, and given timings.");
-            return; // Or throw an exception or handle the situation as per your requirement
+            throw new ResourceAlreadyExistsException("Slot already exists for the given GymCenter, and given timings.");
         }
         String sql = "INSERT INTO Slots(`CenterId`,`StartTime`,`EndTime`,`NumOfSeats`,`Cost`) VALUES (?,?,?,?,?)";
 
@@ -100,15 +112,17 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
             statement.setInt(5, slot.getCost()); // Assuming gymCenter.getGymID() retrieves the gymID
 
             int rowsInserted = statement.executeUpdate();
-            if (rowsInserted > 0) {
-                System.out.println("Slot added successfully.");
+            if (rowsInserted <= 0) {
+                throw new DataEntryFailedException("Failed to add slot");
             } else {
-                System.out.println("Failed to add slot.");
+                return true;
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
+        return false;
     }
 
     public boolean isSlotExists(int centerID, GymSlots slot) {
@@ -127,13 +141,15 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return false;
     }
 
 
     @Override
-    public void deleteSlot(int centerID, LocalTime starttime) {
+    public boolean deleteSlot(int centerID, LocalTime starttime) throws DataEntryFailedException {
         String sql = "DELETE FROM Slots WHERE centerID = ? AND starttime = ?";
 
         try {
@@ -147,18 +163,21 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
 
             int rowsDeleted = statement.executeUpdate();
             if (rowsDeleted > 0) {
-                System.out.println("Slot deleted successfully.");
+                return true;
             } else {
-                System.out.println("Slot not found or failed to delete.");
+                throw new DataEntryFailedException("Slot not found or failed to delete");
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
+        return false;
     }
 
     @Override
-    public void deleteCenter(int centerID) {
+    public boolean deleteCenter(int centerID) throws DataEntryFailedException{
         String sql = "DELETE FROM GymCenters WHERE centerID = ? ";
 
         try {
@@ -170,18 +189,21 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
 
             int rowsDeleted = statement.executeUpdate();
             if (rowsDeleted > 0) {
-                System.out.println("Center Deleted successfully.");
+                return true;
             } else {
-                System.out.println("Center not found or failed to delete.");
+                throw new DataEntryFailedException("Center not found or failed to delete");
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
+        return false;
     }
 
     @Override
-    public boolean editProfile(GymOwner gymOwner) {
+    public boolean editProfile(GymOwner gymOwner) throws DataEntryFailedException {
         String sql = "UPDATE OwnerInfo SET Name = ?, Email = ?, Address = ?, PhoneNumber = ?, Password=? WHERE OwnerId = ?";
 
         try {
@@ -197,7 +219,7 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
             statement.setInt(6, gymOwner.getOwnerId());
             int rowsUpdated = statement.executeUpdate();
             if (rowsUpdated <= 0) {
-                return false;
+                throw new DataEntryFailedException("Failed to update profile");
             }
 
             statement = connection.prepareStatement("UPDATE User SET Name = ?, Email = ?, Address = ?, PhoneNumber = ? WHERE UserId = ?");
@@ -217,35 +239,14 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return false;
     }
 
     @Override
-    public int login(String email, String password, String role) {
-        try {
-
-            connection = DBConnection.connect();
-            statement = connection.prepareStatement("select * from registration where EmailAddress = ? and Password = ? and Role = ?");
-            statement.setString(1, email);
-            statement.setString(2, password);
-            statement.setString(3, role);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt("UserId");
-            } else {
-                return -1;
-            }
-        } catch (SQLException se) {
-            se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
-    @Override
-    public boolean updatepwd(String email, String password, String role) {
+    public boolean updatepwd(String email, String password, String role) throws InvalidCredentialsException {
         try {
             connection = DBConnection.connect();
             statement = connection.prepareStatement("Select * from Registration where EmailAddress=? and role=?");
@@ -253,7 +254,7 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
             statement.setString(2, role);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
-                return false;
+                throw new InvalidCredentialsException("You are not registered for this role yet!!");
             } else {
                 int id = resultSet.getInt(1);
                 statement = connection.prepareStatement("update Registration set Password=? where UserId=?");
@@ -270,8 +271,8 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
 
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return false;
     }

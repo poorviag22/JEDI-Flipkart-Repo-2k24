@@ -1,5 +1,6 @@
 package com.flipfit.dao;
 
+import com.flipfit.exceptions.DBConnectionException;
 import com.flipfit.utils.DBConnection;
 
 import java.sql.Connection;
@@ -29,6 +30,8 @@ public class GymSlotDAOImpl implements GymSlotDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return NumSeatsAvailable;
     }

@@ -4,23 +4,25 @@ import com.flipfit.bean.GymBooking;
 import com.flipfit.bean.GymCustomer;
 import com.flipfit.bean.GymPayment;
 import com.flipfit.bean.GymSlots;
+import com.flipfit.exceptions.DataEntryFailedException;
+import com.flipfit.exceptions.InvalidCredentialsException;
+import com.flipfit.exceptions.ResourceNotFoundException;
+import com.flipfit.exceptions.UnauthorisedAccessException;
 
 import java.util.*;
 
 public interface GymCustomerDAO {
-    public boolean createProfile(GymCustomer customer);
+    public boolean createProfile(GymCustomer customer) throws InvalidCredentialsException, DataEntryFailedException;
 
-    public boolean editProfile(GymCustomer customer);
+    public boolean editProfile(GymCustomer customer) throws DataEntryFailedException;
 
-    public int login(String email, String password, String role);
+    public List<GymBooking> viewBookings(int customerId) throws ResourceNotFoundException;
 
-    public List<GymBooking> viewBookings(int customerId);
+    public int createBooking(int customerID, int slotID, int centerId, Date date) throws ResourceNotFoundException;
 
-    public int createBooking(int customerID, int slotID, int centerId, Date date);
+    public boolean cancelBooking(int customerId, int bookingID) throws InvalidCredentialsException, UnauthorisedAccessException;
 
-    public boolean cancelBooking(int customerId, int bookingID);
+    public int makepayment(GymPayment paymentData) throws DataEntryFailedException;
 
-    public int makepayment(GymPayment paymentData);
-
-    public boolean updatepwd(String email, String password, String role);
+    public boolean updatepwd(String email, String password, String role) throws InvalidCredentialsException;
 }

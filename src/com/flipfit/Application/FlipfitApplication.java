@@ -1,10 +1,10 @@
 package com.flipfit.Application;
 
 import com.flipfit.business.*;
-import com.flipfit.utils.DBConnection;
+import com.flipfit.exceptions.DBConnectionException;
+import com.flipfit.exceptions.InvalidCredentialsException;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -23,30 +23,26 @@ public class FlipfitApplication {
         GymUserBusiness userBusiness = new GymUserBusinessImpl();
         if (role.equals("gymadmin")) {
             int adminId = userBusiness.login(email, pwd, role);
-            if (adminId == -1) {
-                System.out.println("Login Failed, Check your Credentials Again !!");
-            } else {
+            if (adminId != -1) {
                 GymAdminFlipfitmenu admin = new GymAdminFlipfitmenu();
                 admin.gymadminmenu(adminId);
             }
         }
-        if (role.equals("gymcustomer")) {
+        else if (role.equals("gymcustomer")) {
             int custId = userBusiness.login(email, pwd, role);
-            if (custId == -1) {
-                System.out.println("Login Failed, Check Your Credentials Again !!");
-            } else {
+            if (custId != -1) {
                 GymCustomerFlipfitmenu customer = new GymCustomerFlipfitmenu();
                 customer.gymcustomermenu(custId);
             }
         }
-        if (role.equals("gymowner")) {
+        else if (role.equals("gymowner")) {
             int ownerId = userBusiness.login(email, pwd, role);
-            if (ownerId == -1) {
-                System.out.println("Login Failed, Check Your Credentials Again !!");
-            } else {
+            if (ownerId != -1) {
                 GymOwnerFlipfitmenu owner = new GymOwnerFlipfitmenu();
                 owner.gymownermenu(ownerId);
             }
+        } else {
+            System.out.println("Invalid role, try again");
         }
     }
 
@@ -77,7 +73,7 @@ public class FlipfitApplication {
                 System.out.println("Password Update Successful");
             }
         }
-        if (role.equals("gymcustomer")) {
+        else if (role.equals("gymcustomer")) {
             GymCustomerBusiness customerBusiness = new GymCustomerBusinessImpl();
             if(!customerBusiness.updatepwd(email, pwd, role)){
                 System.out.println("Update Failed, Check Your Credentials Again !!");
@@ -85,14 +81,15 @@ public class FlipfitApplication {
                 System.out.println("Password Update Successful");
             }
         }
-        if (role.equals("gymowner")) {
+        else if (role.equals("gymowner")) {
             GymOwnerBusiness ownerBusiness = new GymOwnerBusinessImpl();
             if(!ownerBusiness.updatepwd(email, pwd, role)){
                 System.out.println("Update Failed, Check Your Credentials Again !!");
             } else {
                 System.out.println("Password Update Successful");
             }
-
+        } else {
+            System.out.println("Invalid Role, Try Again");
         }
     }
 
@@ -103,6 +100,7 @@ public class FlipfitApplication {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         LocalDateTime now = LocalDateTime.now();
         System.out.println("Current Date and Time: " + dtf.format(now));
+
         while (true) {
             System.out.println("Welcome to FlipFit Application");
             java.util.Scanner in = new java.util.Scanner(System.in);

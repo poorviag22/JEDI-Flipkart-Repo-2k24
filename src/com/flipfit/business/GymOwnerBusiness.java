@@ -8,15 +8,15 @@ import java.time.LocalTime;
 
 public interface GymOwnerBusiness {
 
-    public void registerCenter(int ownerId, String centerName,String location,int slots);
+    public boolean registerCenter(int ownerId, String centerName,String location,int slots);
 
-    public void addnewSlot(int centerId, GymSlots slot);
+    public boolean addnewSlot(int centerId, GymSlots slot);
 
-    public void deleteSlot(int centerId, LocalTime startTime);
+    public boolean deleteSlot(int centerId, LocalTime startTime);
 
-    public void deleteCenter(int centerId);
+    public boolean deleteCenter(int centerId);
 
-    public void editProfile(GymOwner owner);
+    public boolean editProfile(GymOwner owner);
 
     public boolean createProfile(GymOwner owner);
 

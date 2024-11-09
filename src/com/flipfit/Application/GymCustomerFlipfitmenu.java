@@ -62,13 +62,18 @@ public class GymCustomerFlipfitmenu {
             int choice = in.nextInt();
             if (choice == 1) {
                 List<GymBooking> list = service.viewBookings(currentcustId);
-                System.out.println("BookingId CenterName CenterLocation StartTime EndTime Date");
-                for (GymBooking booking : list) {
-                    System.out.println(booking.getBookingId() + " " + booking.getCenterName() + " " + booking.getCenterLocation() + " " + booking.getStartTime().toString() + " " + booking.getEndTime().toString() + " " + booking.getBookingDate());
+                if(!list.isEmpty()){
+                    System.out.println("BookingId CenterName CenterLocation StartTime EndTime Date");
+                    for (GymBooking booking : list) {
+                        System.out.println(booking.getBookingId() + " " + booking.getCenterName() + " " + booking.getCenterLocation() + " " + booking.getStartTime().toString() + " " + booking.getEndTime().toString() + " " + booking.getBookingDate());
+                    }
                 }
             }
             else if (choice == 2) {
                 List<GymCenter> list = ser.viewCenter();
+                if(list.size() == 0){
+                    continue;
+                }
                 System.out.println("CenterId OwnerId CenterName CenterLocation NumOfSlots");
                 for (GymCenter center : list) {
                     System.out.println(center.getCenterId() + " " + center.getOwnerId() + " " + center.getGymName() + " " + center.getGymLocation() + " " + center.getNumOfSlots());
@@ -83,6 +88,10 @@ public class GymCustomerFlipfitmenu {
                     System.out.println("Enter the centre ID to select a slot for booking");
                     int centerId = in.nextInt();
                     List<GymSlots> slots = centerBusiness.viewSlots(centerId, date);
+                    if(slots.size() == 0){
+                        System.out.println("No slot found");
+                        continue;
+                    }
                     System.out.println("SlotId CenterId StartTime EndTime AvailableNumSeats Cost");
                     for (GymSlots slot : slots) {
                         System.out.println(slot.getSlotId() + " " + slot.getCenterId() + " " + slot.getStartTime() + " " + slot.getEndTime() + " " + slot.getCost() + " " + slot.getTotalSeats());
@@ -109,8 +118,6 @@ public class GymCustomerFlipfitmenu {
                 int bookingId = in.nextInt();
                 if(service.cancelBooking(currentcustId, bookingId)){
                     System.out.println("Booking Canceled Successfully");
-                } else {
-                    System.out.println("Booking Cancellation Failed");
                 }
             }
             else if (choice == 4) {
@@ -128,7 +135,9 @@ public class GymCustomerFlipfitmenu {
                 String contactNumber = in.nextLine();
                 GymCustomer customer = new GymCustomer(name, address, email, contactNumber, password);
                 customer.setCustomerId(currentcustId);
-                service.editProfile(customer);
+                if(service.editProfile(customer)){
+                    System.out.println("Profile Edited Successfully");
+                }
             }
             else if (choice == 5)
                 break;

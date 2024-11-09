@@ -1,5 +1,7 @@
 package com.flipfit.utils;
 
+import com.flipfit.exceptions.DBConnectionException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -7,7 +9,7 @@ import java.sql.SQLException;
 
 public class DBConnection
 {
-    public static Connection connect() throws SQLException {
+    public static Connection connect() throws DBConnectionException {
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
             String password = "Password123";//Enter your password here
@@ -19,13 +21,8 @@ public class DBConnection
             System.out.println("Database Connected");
 
             return con;
-
-
-
         }catch(Exception e){
-            System.out.println(e);
-            System.out.println("Database Not Connected");
-            return null;
+            throw new DBConnectionException("Database Not Connected");
             }
 
     }

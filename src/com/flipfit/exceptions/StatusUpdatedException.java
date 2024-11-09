@@ -1,7 +1,7 @@
 package com.flipfit.exceptions;
 
-public class PendingRequestNotFoundException extends Exception{
-    public PendingRequestNotFoundException(String message) {
+public class StatusUpdatedException extends Exception{
+    public StatusUpdatedException(String message) {
         super(message);
     }
 }

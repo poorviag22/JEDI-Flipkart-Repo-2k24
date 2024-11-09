@@ -3,24 +3,25 @@ package com.flipfit.dao;
 import com.flipfit.bean.GymCustomer;
 import com.flipfit.bean.GymOwner;
 import com.flipfit.bean.GymSlots;
+import com.flipfit.exceptions.DataEntryFailedException;
+import com.flipfit.exceptions.InvalidCredentialsException;
+import com.flipfit.exceptions.ResourceAlreadyExistsException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public interface GymOwnerDAO {
-    public boolean createProfile(GymOwner gymOwner);
+    public boolean createProfile(GymOwner gymOwner) throws InvalidCredentialsException, DataEntryFailedException;
 
-    public void registerCenter(int ownerId, String centerName, String location, int slots);
+    public boolean registerCenter(int ownerId, String centerName, String location, int slots) throws DataEntryFailedException;
 
-    public void addSlots(int centerID, GymSlots slot);
+    public boolean addSlots(int centerID, GymSlots slot) throws ResourceAlreadyExistsException, DataEntryFailedException;
 
-    public void deleteSlot(int centerID, LocalTime starttime);
+    public boolean deleteSlot(int centerID, LocalTime starttime) throws DataEntryFailedException;
 
-    public void deleteCenter(int centerId);
+    public boolean deleteCenter(int centerId) throws DataEntryFailedException;
 
-    public boolean editProfile(GymOwner gymOwner);
+    public boolean editProfile(GymOwner gymOwner) throws DataEntryFailedException;
 
-    public int login(String email, String password, String role);
-
-    public boolean updatepwd(String email, String password, String role);
+    public boolean updatepwd(String email, String password, String role) throws InvalidCredentialsException;
 }

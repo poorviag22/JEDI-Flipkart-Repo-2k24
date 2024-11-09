@@ -1,6 +1,10 @@
 package com.flipfit.dao;
 
 import com.flipfit.bean.*;
+import com.flipfit.exceptions.DBConnectionException;
+import com.flipfit.exceptions.InvalidCredentialsException;
+import com.flipfit.exceptions.ResourceNotFoundException;
+import com.flipfit.exceptions.StatusUpdatedException;
 import com.flipfit.utils.DBConnection;
 
 import java.sql.Connection;
@@ -17,7 +21,7 @@ public class GymAdminDAOImpl implements GymAdminDAO {
     private PreparedStatement stmt = null;
 
     @Override
-    public List<GymBooking> viewBookings() {
+    public List<GymBooking> viewBookings() throws ResourceNotFoundException {
         List<GymBooking> bookings = new ArrayList<>();
         try {
             // We get all bookings
@@ -43,25 +47,30 @@ public class GymAdminDAOImpl implements GymAdminDAO {
                 //Store the bookings in list
                 bookings.add(new GymBooking(resultSet.getInt(2), CenterName, CenterLoc, startTime, endTime, resultSet.getDate(5)));
             }
+            if(bookings.isEmpty()){
+                throw new ResourceNotFoundException("Bookings not found");
+            }
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return bookings;
     }
 
-    public void approveOwnerRegistration(int requestId, String statuss) {
+    public void approveOwnerRegistration(int requestId, String statuss) throws StatusUpdatedException, ResourceNotFoundException {
         try {
             conn = DBConnection.connect();
             // check whether request exists
-            statement = conn.prepareStatement("Select * from OwnerRequest where RequestId=? and Status=?");
+            statement = conn.prepareStatement("Select * from OwnerRequest where RequestId=?");
             statement.setInt(1, requestId);
-            statement.setString(2, "pending");
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
-                System.out.println("Such Pending Request Does Not Exist!!");
-                return;
+                throw new ResourceNotFoundException("Such Request Does Not Exist");
+            }
+            String status = resultSet.getString(3);
+            if(!status.equals("pending")){
+                throw new StatusUpdatedException("The request has already been approved/rejected");
             }
             // update the status
             int ownerId = resultSet.getInt(2);
@@ -85,13 +94,13 @@ public class GymAdminDAOImpl implements GymAdminDAO {
             statement.executeUpdate();
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
     }
 
     @Override
-    public List<GymOwnerRequest> pendingRequests() {
+    public List<GymOwnerRequest> pendingRequests() throws ResourceNotFoundException {
         List<GymOwnerRequest> requests = new ArrayList<>();
         try {
             //get all pending requests
@@ -103,17 +112,20 @@ public class GymAdminDAOImpl implements GymAdminDAO {
                 //store all the pending requests in the list
                 requests.add(new GymOwnerRequest(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getInt(6)));
             }
+            if(requests.isEmpty()){
+                throw new ResourceNotFoundException("No Pending Requests Available");
+            }
 
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return requests;
     }
 
     @Override
-    public List<GymCenter> viewCenter() {
+    public List<GymCenter> viewCenter() throws ResourceNotFoundException {
         List<GymCenter> centers = new ArrayList<>();
         try {
             // get all gymcenters
@@ -124,17 +136,19 @@ public class GymAdminDAOImpl implements GymAdminDAO {
                 //store all the centers in a list
                 centers.add(new GymCenter(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getInt(5)));
             }
-
+            if(centers.isEmpty()){
+                throw new ResourceNotFoundException("No Gym Centers Available");
+            }
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return centers;
     }
 
     @Override
-    public boolean updatepwd(String email, String password, String role) {
+    public boolean updatepwd(String email, String password, String role) throws InvalidCredentialsException {
         try {
             // check whether a user exists with the corresponding mailID on that role
             conn = DBConnection.connect();
@@ -143,8 +157,8 @@ public class GymAdminDAOImpl implements GymAdminDAO {
             stmt.setString(2, role);
             ResultSet resultSet = stmt.executeQuery();
             if (!resultSet.next()) {
-                System.out.println("You are not registered for this role yet!!");
-                return false;
+                throw new InvalidCredentialsException("You are not registered for this role yet!!");
+                //return false;
             } else {
                 // update password in registration table
                 int id = resultSet.getInt(1);
@@ -163,8 +177,8 @@ public class GymAdminDAOImpl implements GymAdminDAO {
 
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return false;
     }

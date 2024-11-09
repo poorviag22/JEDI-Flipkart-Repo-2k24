@@ -39,7 +39,9 @@ public class GymOwnerFlipfitmenu {
                 String location = scanner.next();
                 System.out.println("Enter No Of Slots In Center");
                 int slots = scanner.nextInt();
-                service.registerCenter(currentownerId, centerName, location, slots);
+                if(service.registerCenter(currentownerId, centerName, location, slots)){
+                    System.out.println("Gym Center Registered Successfully");
+                }
             }
             else if (choice == 2) {
                 Scanner scanner = new Scanner(System.in);
@@ -48,14 +50,16 @@ public class GymOwnerFlipfitmenu {
                 int centerId = scanner.nextInt();
                 System.out.println("Enter your StartTime as HH:MM:SS in 24-Hour Format");
                 LocalTime startTime= LocalTime.parse(scanner.next());
-                System.out.println("Enter your StartTime as HH:MM:SS in 24-Hour Format");
+                System.out.println("Enter your EndTime as HH:MM:SS in 24-Hour Format");
                 LocalTime endTime = LocalTime.parse(scanner.next());
                 System.out.println("Enter Number of Seats:");
                 int seats = scanner.nextInt();
                 System.out.println("Enter Cost:");
                 int cost = scanner.nextInt();
                 GymSlots slot = new GymSlots(centerId, startTime, endTime, seats, cost);
-                service.addnewSlot(centerId, slot);
+                if(service.addnewSlot(centerId, slot)){
+                    System.out.println("New Slot Added Successfully");
+                }
             }
             else if (choice == 3) {
                 Scanner scanner = new Scanner(System.in);
@@ -64,14 +68,18 @@ public class GymOwnerFlipfitmenu {
                 int centerId = scanner.nextInt();
                 System.out.println("Enter your StartTime as HH:MM:SS in 24-Hour Format");
                 LocalTime startTime= LocalTime.parse(scanner.next());
-                service.deleteSlot(centerId, startTime);
+                if(service.deleteSlot(centerId, startTime)){
+                    System.out.println("Slot Deleted Successfully");
+                }
             }
             else if (choice == 4) {
                 System.out.println("Deleting center...");
                 in = new java.util.Scanner(System.in);
                 System.out.println("Enter the center ID to be deleted: ");
                 int centerId = in.nextInt();
-                service.deleteCenter(centerId);
+                if(service.deleteCenter(centerId)){
+                    System.out.println("Center Deleted Successfully");
+                }
             }
             else if (choice == 5) {
                 in = new java.util.Scanner(System.in);
@@ -88,7 +96,9 @@ public class GymOwnerFlipfitmenu {
                 String contactNumber = in.nextLine();
                 GymOwner owner = new GymOwner(name, email, contactNumber, address, password);
                 owner.setOwnerId(currentownerId);
-                service.editProfile(owner);
+                if(service.editProfile(owner)){
+                    System.out.println("Profile Edited Successfully");
+                }
             }
             else if (choice == 6)
                 break;

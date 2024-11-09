@@ -3,6 +3,8 @@ package com.flipfit.dao;
 import com.flipfit.bean.GymSlots;
 import com.flipfit.business.GymSlotsBusiness;
 import com.flipfit.business.GymSlotsBusinessImpl;
+import com.flipfit.exceptions.DBConnectionException;
+import com.flipfit.exceptions.ResourceNotFoundException;
 import com.flipfit.utils.DBConnection;
 
 import java.sql.Connection;
@@ -19,7 +21,7 @@ public class GymCenterDAOImpl implements GymCenterDAO {
     private PreparedStatement statement = null;
 
     @Override
-    public List<GymSlots> viewSlots(int centerId, Date date) {
+    public List<GymSlots> viewSlots(int centerId, Date date) throws ResourceNotFoundException {
         List<GymSlots> slots = new ArrayList<>();
         try {
             // Get all the slots of the particular center
@@ -36,10 +38,13 @@ public class GymCenterDAOImpl implements GymCenterDAO {
                 // Store the slot info in the list
                 slots.add(new GymSlots(resultSet.getInt(2), slotID, resultSet.getTime(3).toLocalTime(), resultSet.getTime(4).toLocalTime(), resultSet.getInt(6), NumSeatsAvailable));
             }
+            if(slots.isEmpty()){
+                throw new ResourceNotFoundException("No slots found for center");
+            }
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return slots;
     }

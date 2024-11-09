@@ -3,6 +3,7 @@ package com.flipfit.dao;
 import com.flipfit.bean.GymSlots;
 import com.flipfit.business.GymSlotsBusiness;
 import com.flipfit.business.GymSlotsBusinessImpl;
+import com.flipfit.exceptions.*;
 import com.flipfit.utils.DBConnection;
 import com.flipfit.bean.GymBooking;
 import com.flipfit.bean.GymCustomer;
@@ -19,15 +20,16 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
     private PreparedStatement statement = null;
 
     @Override
-    public boolean createProfile(GymCustomer customer) {
+    public boolean createProfile(GymCustomer customer) throws InvalidCredentialsException, DataEntryFailedException {
         try {
             // check whether user with the mail id exists
+
             conn = DBConnection.connect();
             statement = conn.prepareStatement("Select * From Registration where EmailAddress = ?");
             statement.setString(1, customer.getCustomerEmailAddress());
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                return false;
+                throw new InvalidCredentialsException("User already exists with this email address");
             }
 
             //adds the user data into user table
@@ -46,6 +48,8 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
                 if (generatedKeys.next()) {
                     customerId = generatedKeys.getInt(1);
                 }
+            } else {
+                throw new DataEntryFailedException("Failed Adding User Details to User Database");
             }
 
             // adds the data into customer table
@@ -68,17 +72,18 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
             return true;
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return false;
     }
 
     @Override
-    public boolean editProfile(GymCustomer customer) {
+    public boolean editProfile(GymCustomer customer) throws DataEntryFailedException {
         String sql = "UPDATE Customer SET Name = ?, Email = ?, Address = ?, PhoneNumber = ?, Password=? WHERE CustId = ?";
 
         try {
+
             conn = DBConnection.connect();
             // update the user details in customer table
             PreparedStatement statement = conn.prepareStatement(sql);
@@ -90,7 +95,7 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
             statement.setInt(6, customer.getCustomerId());
             int rowsUpdated = statement.executeUpdate();
             if (rowsUpdated <= 0) {
-                return false;
+                throw new DataEntryFailedException("Failed to update profile in Customer Database");
             }
 
             // update the user details in user table
@@ -111,36 +116,14 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return false;
     }
 
     @Override
-    public int login(String email, String password, String role) {
-        try {
-
-            conn = DBConnection.connect();
-            // Checks whether entry exists with emailId, password, role
-            statement = conn.prepareStatement("select * from registration where EmailAddress = ? and Password = ? and Role = ?");
-            statement.setString(1, email);
-            statement.setString(2, password);
-            statement.setString(3, role);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt("UserId");
-            } else {
-                return -1;
-            }
-        } catch (SQLException se) {
-            se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
-    @Override
-    public List<GymBooking> viewBookings(int customerId) {
+    public List<GymBooking> viewBookings(int customerId) throws ResourceNotFoundException {
         List<GymBooking> bookings = new ArrayList<>();
         try {
             // Fetch all bookings with the matching customerId
@@ -167,24 +150,32 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
                 LocalTime endTime = resultSet1.getTime(4).toLocalTime();
                 bookings.add(new GymBooking(resultSet.getInt(2), CenterName, CenterLoc, startTime, endTime, resultSet.getDate(5)));
             }
+            if(bookings.isEmpty()){
+                throw new ResourceNotFoundException("No bookings found");
+            }
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return bookings;
     }
 
     @Override
-    public boolean cancelBooking(int customerId, int bookingID) {
+    public boolean cancelBooking(int customerId, int bookingID) throws InvalidCredentialsException, UnauthorisedAccessException {
         try {
+
             conn = DBConnection.connect();
+
             // Fetch bookings with the matching customerId and bookingId
-            statement = conn.prepareStatement("select * from CustomerBooking where CustId = ? and BookingID = ?");
-            statement.setInt(1, customerId);
-            statement.setInt(2, bookingID);
+            statement = conn.prepareStatement("select * from CustomerBooking where BookingID = ?");
+            statement.setInt(1, bookingID);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
+                int custId = resultSet.getInt(1);
+                if(custId != customerId){
+                    throw new UnauthorisedAccessException("You are not authorized to cancel bookings of other customers");
+                }
                 // Get the slot of booking cancelled
                 statement = conn.prepareStatement("SELECT * from CustomerBooking where BookingId = ?");
                 statement.setInt(1, bookingID);
@@ -213,22 +204,19 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
                 statement.executeUpdate();
                 return true;
             } else {
-                System.out.println("Check your booking Id again");
-                return false;
+                throw new InvalidCredentialsException("Check your booking Id again");
             }
         } catch (SQLException se) {
             se.printStackTrace();
-            System.out.println("Failed 2");
             return false;
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Failed 3");
+        } catch (DBConnectionException e) {
+            System.out.println(e);
             return false;
         }
     }
 
     @Override
-    public int createBooking(int customerID, int slotID, int centerId, Date date) {
+    public int createBooking(int customerID, int slotID, int centerId, Date date) throws ResourceNotFoundException {
         try {
             conn = DBConnection.connect();
             // If a booking was done for the slot and date
@@ -291,39 +279,37 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
                     }
                 }
             } else {
-                System.out.println("No Seats Available for the slot on that date");
+                throw new ResourceNotFoundException("No Seats Available for the slot on that date");
             }
             return bookingID;
 
         } catch (SQLException se) {
             se.printStackTrace();
             return -1;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
             return -1;
         }
     }
 
     @Override
-    public int makepayment(GymPayment paymentData) {
+    public int makepayment(GymPayment paymentData) throws DataEntryFailedException {
         try {
             // check whether booking exists with bookingId
+
             conn = DBConnection.connect();
+
             System.out.println("Making Payment ");
             statement = conn.prepareStatement("Select * from CustomerBooking where BookingId = ?");
             statement.setInt(1, paymentData.getBookingID());
             ResultSet resultSet = statement.executeQuery();
-            if (!resultSet.next()) {
-                System.out.println("No Booking found");
-            }
+            resultSet.next();
             // get the cost from slot table using slotId
             int slotId = resultSet.getInt(4);
             statement = conn.prepareStatement("SELECT * from Slots where slotsId = ?");
             statement.setInt(1, slotId);
             resultSet = statement.executeQuery();
-            if (!resultSet.next()) {
-                System.out.println("No slot found");
-            }
+            resultSet.next();
             int cost = resultSet.getInt(6);
             // add payment into table
             statement = conn.prepareStatement("insert into payment(`BookingId`, `Mode`, `Amount`) values (?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
@@ -338,17 +324,22 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
                 if (generatedKeys.next()) {
                     paymentId = generatedKeys.getInt(1);
                 }
+            } else {
+                throw new DataEntryFailedException("Data Entry Failed into the Payments Database");
             }
             return paymentId;
 //            payment ID needs to auto generated and Mode has to be added in the table and status we need to add here
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
+        } catch (SQLException se) {
+            se.printStackTrace();
         }
+        catch (DBConnectionException e) {
+            System.out.println(e);
+        }
+        return -1;
     }
 
     @Override
-    public boolean updatepwd(String email, String password, String role) {
+    public boolean updatepwd(String email, String password, String role) throws InvalidCredentialsException {
         try {
             conn = DBConnection.connect();
             statement = conn.prepareStatement("Select * from Registration where EmailAddress=? and role=?");
@@ -356,7 +347,7 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
             statement.setString(2, role);
             ResultSet resultSet = statement.executeQuery();
             if (!resultSet.next()) {
-                return false;
+                throw new InvalidCredentialsException("You are not registered for this role yet!!");
             } else {
                 int id = resultSet.getInt(1);
                 statement = conn.prepareStatement("update Registration set Password=? where UserId=?");
@@ -373,8 +364,8 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
 
         } catch (SQLException se) {
             se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DBConnectionException e) {
+            System.out.println(e);
         }
         return false;
     }
