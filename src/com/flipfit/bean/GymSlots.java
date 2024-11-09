@@ -66,4 +66,13 @@ public class GymSlots {
         this.totalSeats = totalSeats;
         this.cost = cost;
     }
+
+    public GymSlots(int centerId, int slotId, LocalTime startTime, LocalTime endTime, int totalSeats, int cost) {
+        this.centerId = centerId;
+        this.slotId = slotId;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.totalSeats = totalSeats;
+        this.cost = cost;
+    }
 }

@@ -2,6 +2,7 @@ package com.flipfit.bean;
 
 public class GymCenter {
     private int centerId;
+    private int ownerId;
     private String gymName;
     private String gymLocation;
     private int numOfSlots;
@@ -34,4 +35,23 @@ public class GymCenter {
         this.numOfSlots = numOfSlots;
     }
 
+    public int getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public int getCenterId() {
+        return centerId;
+    }
+
+    public GymCenter(int centerId, int ownerId, String gymName, String gymLocation, int numOfSlots) {
+        this.centerId = centerId;
+        this.ownerId = ownerId;
+        this.gymName = gymName;
+        this.gymLocation = gymLocation;
+        this.numOfSlots = numOfSlots;
+    }
 }

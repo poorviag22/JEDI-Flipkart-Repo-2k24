@@ -1,5 +1,6 @@
 package com.flipfit.dao;
 
+import com.flipfit.bean.*;
 import com.flipfit.utils.DBConnection;
 
 import java.sql.Connection;
@@ -7,99 +8,62 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
-public class GymAdminDAOImpl implements GymAdminDAO
-{
+import java.time.LocalTime;
+import java.util.*;
+
+public class GymAdminDAOImpl implements GymAdminDAO {
     private Connection conn = null;
     private PreparedStatement statement = null;
     private PreparedStatement stmt = null;
 
     @Override
-    public void viewBookings() {
+    public List<GymBooking> viewBookings() {
+        List<GymBooking> bookings = new ArrayList<>();
         try {
+            // We get all bookings
             conn = DBConnection.connect();
-            System.out.println("Fetching gyms owners..");
-
-            statement = conn.prepareStatement("Select * from CustomerBooking");
-            ResultSet rs=statement.executeQuery();
-            while(rs.next()){
-                System.out.println(rs.getInt(1)+" "+rs.getInt(2)+" "+rs.getInt(3)+" "+rs.getInt(4));
+            statement = conn.prepareStatement("select * from CustomerBooking");
+            ResultSet resultSet = statement.executeQuery();
+            // For every booking in the table, we iterate the loop
+            while (resultSet.next()) {
+                // Get the center of this particular booking
+                statement = conn.prepareStatement("select * from GymCenters where centerId = ?");
+                statement.setInt(1, resultSet.getInt(3));
+                ResultSet resultSet1 = statement.executeQuery();
+                resultSet1.next();
+                String CenterName = resultSet1.getString(3);
+                String CenterLoc = resultSet1.getString(4);
+                // Get the particular slot of this booking
+                statement = conn.prepareStatement("select * from Slots where slotsId = ?");
+                statement.setInt(1, resultSet.getInt(4));
+                resultSet1 = statement.executeQuery();
+                resultSet1.next();
+                LocalTime startTime = resultSet1.getTime(3).toLocalTime();
+                LocalTime endTime = resultSet1.getTime(4).toLocalTime();
+                //Store the bookings in list
+                bookings.add(new GymBooking(resultSet.getInt(2), CenterName, CenterLoc, startTime, endTime, resultSet.getDate(5)));
             }
-
-
-
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return bookings;
     }
 
-    //to be removed
-    @Override
-    public void editProfile(int id, String name,String email,String number,String pwd) {
+    public void approveOwnerRegistration(int requestId, String statuss) {
         try {
             conn = DBConnection.connect();
-            System.out.println("Fetching gyms owners..");
-            stmt =conn.prepareStatement("Select AdminId from CustomerBooking where AdminId =?");
-            stmt.setInt(1, id);
-            ResultSet  resultSet=stmt.executeQuery();
-
-            if (!resultSet.next() ) {
-                System.out.println("Admin Does Not Exist with that ID!!");
-            }
-            else {
-                statement = conn.prepareStatement("update AdminInfo set AdminId=?,Name=?,Email=?,PhoneNumber=?,Password=? where AdminId="+id);
-                statement.setInt(1,id);
-                statement.setString(2, name);
-                statement.setString(3, email);
-                statement.setString(4, number);
-                statement.setString(5, pwd);
-
-                statement.executeUpdate();
-            }
-
-        } catch (SQLException se) {
-            se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void viewCustomers() {
-        try {
-            conn = DBConnection.connect();
-            System.out.println("Fetching gyms owners..");
-
-            statement = conn.prepareStatement("Select * from Customer");
-            ResultSet rs=statement.executeQuery();
-
-            //PreparedStatement stmt=con.prepareStatement("select * from emp");
-            //ResultSet rs=stmt.executeQuery();
-            while(rs.next()){
-                System.out.println(rs.getInt(1)+" "+rs.getString(2)+" "+rs.getString(3)+" "+rs.getString(4)+" "+rs.getString(5)+" "+rs.getString(6));
-            }
-
-        } catch (SQLException se) {
-            se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public void approveOwnerRegistration(int requestId, String statuss){
-        try {
-            conn = DBConnection.connect();
-            //check whether request exists
+            // check whether request exists
             statement = conn.prepareStatement("Select * from OwnerRequest where RequestId=? and Status=?");
             statement.setInt(1, requestId);
             statement.setString(2, "pending");
             ResultSet resultSet = statement.executeQuery();
-            if(!resultSet.next()){
+            if (!resultSet.next()) {
                 System.out.println("Such Pending Request Does Not Exist!!");
+                return;
             }
-            //update the status
+            // update the status
             int ownerId = resultSet.getInt(2);
             String centerName = resultSet.getString(4);
             String location = resultSet.getString(5);
@@ -109,10 +73,10 @@ public class GymAdminDAOImpl implements GymAdminDAO
             statement.setInt(2, requestId);
             statement.executeUpdate();
 
-            if(statuss.equals("rejected")){
+            if (statuss.equals("rejected")) {
                 return;
             }
-            //add center to center table
+            // if approved, add center to center table
             statement = conn.prepareStatement("insert into GymCenters(`OwnerId`,`CenterName`,`Location`,`NumOfSlots`) values (?,?,?,?)");
             statement.setInt(1, ownerId);
             statement.setString(2, centerName);
@@ -127,21 +91,17 @@ public class GymAdminDAOImpl implements GymAdminDAO
     }
 
     @Override
-    public void pendingRequests() {
+    public List<GymOwnerRequest> pendingRequests() {
+        List<GymOwnerRequest> requests = new ArrayList<>();
         try {
+            //get all pending requests
             conn = DBConnection.connect();
-            System.out.println("Fetching gyms owners..");
-
             statement = conn.prepareStatement("Select * from OwnerRequest where Status=?");
             statement.setString(1, "pending");
-
-            ResultSet rs=statement.executeQuery();
-
-            //PreparedStatement stmt=con.prepareStatement("select * from emp");
-            //ResultSet rs=stmt.executeQuery();
-            System.out.println("RequestId OwnerId Status CenterName CenterLocation NumOfSlots");
-            while(rs.next()){
-                System.out.println(rs.getInt(1)+" "+rs.getInt(2)+" "+rs.getString(3)+" "+rs.getString(4)+" "+rs.getString(5)+" "+rs.getInt(6));
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                //store all the pending requests in the list
+                requests.add(new GymOwnerRequest(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getInt(6)));
             }
 
         } catch (SQLException se) {
@@ -149,21 +109,20 @@ public class GymAdminDAOImpl implements GymAdminDAO
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return requests;
     }
 
     @Override
-    public void viewCenter() {
+    public List<GymCenter> viewCenter() {
+        List<GymCenter> centers = new ArrayList<>();
         try {
+            // get all gymcenters
             conn = DBConnection.connect();
-            System.out.println("Fetching gyms centers..");
-
             statement = conn.prepareStatement("Select * from GymCenters");
-            ResultSet rs=statement.executeQuery();
-
-            //PreparedStatement stmt=con.prepareStatement("select * from emp");
-            //ResultSet rs=stmt.executeQuery();
-            while(rs.next()){
-                System.out.println(rs.getInt(1)+" "+rs.getInt(2)+" "+rs.getString(3)+" "+rs.getString(4)+" "+rs.getInt(5));
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                //store all the centers in a list
+                centers.add(new GymCenter(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getInt(5)));
             }
 
         } catch (SQLException se) {
@@ -171,53 +130,35 @@ public class GymAdminDAOImpl implements GymAdminDAO
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return centers;
     }
 
     @Override
-    public int login(String email, String password, String role) {
+    public boolean updatepwd(String email, String password, String role) {
         try {
-
+            // check whether a user exists with the corresponding mailID on that role
             conn = DBConnection.connect();
-            statement = conn.prepareStatement("select * from registration where EmailAddress = ? and Password = ? and Role = ?");
-            statement.setString(1, email);
-            statement.setString(2, password);
-            statement.setString(3, role);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt("UserId");
-            } else {
-                return -1;
-            }
-        } catch (SQLException se) {
-            se.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
-    @Override
-    public void updatepwd(String email, String password, String role) {
-        try {
-            conn = DBConnection.connect();
-            stmt =conn.prepareStatement("Select * from Registration where EmailAddress=? and role=?");
+            stmt = conn.prepareStatement("Select * from Registration where EmailAddress=? and role=?");
             stmt.setString(1, email);
             stmt.setString(2, role);
-            ResultSet  resultSet=stmt.executeQuery();
-            if (!resultSet.next() ) {
+            ResultSet resultSet = stmt.executeQuery();
+            if (!resultSet.next()) {
                 System.out.println("You are not registered for this role yet!!");
-            }
-            else {
+                return false;
+            } else {
+                // update password in registration table
                 int id = resultSet.getInt(1);
                 statement = conn.prepareStatement("update Registration set Password=? where UserId=?");
-                statement.setString(1,password);
+                statement.setString(1, password);
                 statement.setInt(2, id);
                 statement.executeUpdate();
 
+                // update password in adminInfo table
                 statement = conn.prepareStatement("update AdminInfo set Password=? where AdminId=?");
-                statement.setString(1,password);
+                statement.setString(1, password);
                 statement.setInt(2, id);
                 statement.executeUpdate();
+                return true;
             }
 
         } catch (SQLException se) {
@@ -225,5 +166,6 @@ public class GymAdminDAOImpl implements GymAdminDAO
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 }

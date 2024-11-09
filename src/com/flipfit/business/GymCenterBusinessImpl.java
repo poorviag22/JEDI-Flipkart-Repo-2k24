@@ -1,16 +1,17 @@
 package com.flipfit.business;
 
+import com.flipfit.bean.GymSlots;
+import com.flipfit.dao.GymCenterDAO;
+import com.flipfit.dao.GymCenterDAOImpl;
+
+import java.util.Date;
+import java.util.List;
+
 public class GymCenterBusinessImpl implements GymCenterBusiness {
-    public String viewSlots(int centerId){
-        return "";
-    }
-    public boolean bookSlot(int centerId,int slotId){
-        return true;
-    }
-    public boolean cancelBooking(int centerId,int slotId){
-        return true;
-    }
-    public int waitlist(int centerId,int slotId){
-        return 1;
+
+    GymCenterDAO gymCenterDAO = new GymCenterDAOImpl();
+    @Override
+    public List<GymSlots> viewSlots(int centerId, Date date) {
+        return gymCenterDAO.viewSlots(centerId, date);
     }
 }

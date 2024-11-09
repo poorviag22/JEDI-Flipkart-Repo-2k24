@@ -57,4 +57,12 @@ public class GymCustomer {
 
     }
 
+    public GymCustomer(int customerId, String customerName, String customerAddress, String customerEmailAddress, String customerPhone, String password) {
+        this.customerId = customerId;
+        this.customerName = customerName;
+        this.customerAddress = customerAddress;
+        this.customerEmailAddress = customerEmailAddress;
+        this.customerPhone = customerPhone;
+        this.password = password;
+    }
 }

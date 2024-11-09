@@ -1,8 +1,7 @@
-package com.flipfit.business;
+package com.flipfit.dao;
 
 import java.util.Date;
 
-public interface GymSlotsBusiness {
+public interface GymSlotDAO {
     public int getNumAvailableSeats(int slotId, Date date, int TotalSeats);
-
 }

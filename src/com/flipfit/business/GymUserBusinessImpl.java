@@ -3,30 +3,28 @@ package com.flipfit.business;
 import com.flipfit.bean.GymAdmin;
 import com.flipfit.bean.GymCustomer;
 import com.flipfit.bean.GymOwner;
+import com.flipfit.dao.GymUserDAO;
+import com.flipfit.dao.GymUserDAOImpl;
+
+import java.util.List;
 
 public class GymUserBusinessImpl implements GymUserBusiness {
-    public void registerUser(){
 
+    GymUserDAO gymUserDAO = new GymUserDAOImpl();
+    @Override
+    public List<GymCustomer> viewAllCustomers() {
+        return gymUserDAO.viewAllCustomers();
     }
-    public String registerCustomer(GymCustomer customerDetails){
-        return "";
-    }
-    public boolean getAdmin(int id){
-        return true;
-    }
-    public boolean viewAllCustomers(int id){
-        return true;
-    }
-    public boolean viewAllGymOwners(int id){
-        return true;
-    }
-    public void authenticateUser(){
 
+    @Override
+    public List<GymOwner> viewAllGymOwners() {
+        return gymUserDAO.viewAllGymOwners();
     }
-    public void registerGymOwner(GymOwner gymOwner){
 
+    @Override
+    public int login(String email, String password, String role) {
+        return gymUserDAO.login(email, password, role);
     }
-    public void registerGymAdmin(GymAdmin gymadmin){
 
-    }
+
 }

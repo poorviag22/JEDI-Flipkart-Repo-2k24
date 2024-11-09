@@ -1,12 +1,17 @@
 package com.flipfit.business;
 
+import com.flipfit.bean.*;
+
+import java.util.*;
+
 public interface GymAdminBusiness {
-public void viewBookings();
-public void editProfile(int adminId);;
-public void viewCustomers();
-public void approveOwnerRegistration(int requestId, String statuss);
-public void pendingRequests();
-public void viewCenter();
-public int login(String email, String password, String role);
-public void updatepwd(String email, String password, String role);
+    public List<GymBooking> viewBookings();
+
+    public void approveOwnerRegistration(int requestId, String statuss);
+
+    public List<GymOwnerRequest> pendingRequests();
+
+    public List<GymCenter> viewCenter();
+
+    public boolean updatepwd(String email, String password, String role);
 }

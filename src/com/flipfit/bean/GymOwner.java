@@ -68,4 +68,13 @@ public class GymOwner {
         this.ownerAddress = ownerAddress;
         this.password = password;
     }
+
+    public GymOwner(int ownerId, String ownerName, String ownerEmailAddress, String ownerPhone, String ownerAddress, String password) {
+        this.ownerId = ownerId;
+        this.ownerName = ownerName;
+        this.ownerEmailAddress = ownerEmailAddress;
+        this.ownerPhone = ownerPhone;
+        this.ownerAddress = ownerAddress;
+        this.password = password;
+    }
 }
