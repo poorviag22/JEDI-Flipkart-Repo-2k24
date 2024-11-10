@@ -65,11 +65,10 @@ public class GymAdminDAOImpl implements GymAdminDAO {
             statement = conn.prepareStatement("Select * from OwnerRequest where RequestId=?");
             statement.setInt(1, requestId);
             ResultSet resultSet = statement.executeQuery();
-            if (!resultSet.next()) {
-                throw new ResourceNotFoundException("Such Request Does Not Exist");
-            }
+            if (resultSet.next()) {
+
             String status = resultSet.getString(3);
-            if(!status.equals("pending")){
+            if (!status.equals("pending")) {
                 throw new StatusUpdatedException("The request has already been approved/rejected");
             }
             // update the status
@@ -92,6 +91,10 @@ public class GymAdminDAOImpl implements GymAdminDAO {
             statement.setString(3, location);
             statement.setInt(4, NumOfSlots);
             statement.executeUpdate();
+        }
+            else {
+                throw new ResourceNotFoundException("Such Request Does Not Exist");
+            }
         } catch (SQLException se) {
             se.printStackTrace();
         } catch (DBConnectionException e) {

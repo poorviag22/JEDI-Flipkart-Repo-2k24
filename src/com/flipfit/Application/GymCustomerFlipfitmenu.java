@@ -24,6 +24,7 @@ public class GymCustomerFlipfitmenu {
 
     public void register() {
         java.util.Scanner in = new java.util.Scanner(System.in);
+        System.out.println("------------------------------------------------------------------------------------------------");
         System.out.println("Registering Gym Customer Menu");
         System.out.println("Enter your name");
         String name = in.nextLine();
@@ -52,6 +53,7 @@ public class GymCustomerFlipfitmenu {
         while (true) {
             System.out.println("Customer ID:" + currentcustId);
             System.out.println("Welcome to FlipFit Customer Menu");
+            System.out.println("------------------------------------------------------------------------------------------------");
             java.util.Scanner in = new java.util.Scanner(System.in);
             System.out.println("1. View My Bookings");
             System.out.println("2. View GymCenter/Book a Slot");
@@ -63,9 +65,12 @@ public class GymCustomerFlipfitmenu {
             if (choice == 1) {
                 List<GymBooking> list = service.viewBookings(currentcustId);
                 if(!list.isEmpty()){
-                    System.out.println("BookingId CenterName CenterLocation StartTime EndTime Date");
+                    System.out.println("------------------------------------------------------------------------------------------------");
+                    System.out.printf("%-15s %-15s %-20s %-25s %-20s %-15s%n",
+                            "BookingId", "CenterName","CenterLocation","StartTime","EndTime","Date");
                     for (GymBooking booking : list) {
-                        System.out.println(booking.getBookingId() + " " + booking.getCenterName() + " " + booking.getCenterLocation() + " " + booking.getStartTime().toString() + " " + booking.getEndTime().toString() + " " + booking.getBookingDate());
+                        System.out.printf("%-15s %-15s %-20s %-25s %-20s %-15s%n",
+                                booking.getBookingId(), booking.getCenterName(), booking.getCenterLocation() , booking.getStartTime().toString(),booking.getEndTime().toString() , booking.getBookingDate());
                     }
                 }
             }
@@ -74,9 +79,10 @@ public class GymCustomerFlipfitmenu {
                 if(list.size() == 0){
                     continue;
                 }
-                System.out.println("CenterId OwnerId CenterName CenterLocation NumOfSlots");
+                System.out.println("------------------------------------------------------------------------------------------------");
+                System.out.printf("%-15s %-15s %-20s %-25s %-30s%n","CenterId"," OwnerId","CenterName"," CenterLocation"," NumOfSlots");
                 for (GymCenter center : list) {
-                    System.out.println(center.getCenterId() + " " + center.getOwnerId() + " " + center.getGymName() + " " + center.getGymLocation() + " " + center.getNumOfSlots());
+                    System.out.printf("%-15s %-15s %-20s %-25s %-30s%n",center.getCenterId(),center.getOwnerId(),center.getGymName(), center.getGymLocation() , center.getNumOfSlots());
                 }
                 System.out.println("Enter a date (dd/mm/yyyy): ");
                 in = new java.util.Scanner(System.in);
@@ -84,6 +90,7 @@ public class GymCustomerFlipfitmenu {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                 try {
                     Date date = sdf.parse(dateStr);
+                    System.out.println("------------------------------------------------------------------------------------------------");
                     System.out.println("Date you entered is : " + date.toString());
                     System.out.println("Enter the centre ID to select a slot for booking");
                     int centerId = in.nextInt();
@@ -92,13 +99,15 @@ public class GymCustomerFlipfitmenu {
                         System.out.println("No slot found");
                         continue;
                     }
-                    System.out.println("SlotId CenterId StartTime EndTime AvailableNumSeats Cost");
+                    System.out.println("------------------------------------------------------------------------------------------------");
+                    System.out.printf("%-15s %-15s %-20s %-25s %-30s %-15s%n","SlotId", "CenterId" ,"StartTime" ,"EndTime" ,"AvailableNumSeats" ,"Cost");
                     for (GymSlots slot : slots) {
-                        System.out.println(slot.getSlotId() + " " + slot.getCenterId() + " " + slot.getStartTime() + " " + slot.getEndTime() + " " + slot.getCost() + " " + slot.getTotalSeats());
+                        System.out.printf("%-15s %-15s %-20s %-25s %-30s %-15s%n",slot.getSlotId() , slot.getCenterId(), slot.getStartTime() , slot.getEndTime() , slot.getCost(), slot.getTotalSeats());
                     }
                     System.out.println("select a slot Id for booking");
                     int slotId = in.nextInt();
                     int bookingId = service.createBooking(currentcustId, slotId, centerId, date);
+                    System.out.println("------------------------------------------------------------------------------------------------");
                     System.out.println("Type Payment Option as one of below without spaces:");
                     System.out.println("1. CreditCard");
                     System.out.println("2. DebitCard");
@@ -122,6 +131,7 @@ public class GymCustomerFlipfitmenu {
             }
             else if (choice == 4) {
                 in = new java.util.Scanner(System.in);
+                System.out.println("------------------------------------------------------------------------------------------------");
                 System.out.println("Editing profile ...");
                 System.out.println("Enter your new name");
                 String name = in.nextLine();

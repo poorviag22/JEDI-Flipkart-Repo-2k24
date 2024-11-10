@@ -103,12 +103,14 @@ public class FlipfitApplication {
 
         while (true) {
             System.out.println("Welcome to FlipFit Application");
+            System.out.println("------------------------------------------------------------------------------------------------");
             java.util.Scanner in = new java.util.Scanner(System.in);
             System.out.println("1. Login");
             System.out.println("2. Registration for GymCustomer");
             System.out.println("3. Registration for GymOwner");
             System.out.println("4. Update Password");
             System.out.println("5. Exit");
+            System.out.println("------------------------------------------------------------------------------------------------");
 
             choice = in.nextInt();
             if (choice == 1) {

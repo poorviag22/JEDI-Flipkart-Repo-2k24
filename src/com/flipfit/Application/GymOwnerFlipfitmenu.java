@@ -22,6 +22,7 @@ public class GymOwnerFlipfitmenu {
         while (true) {
             System.out.println("GymOwnerID: " + currentownerId);
             System.out.println("Welcome to FlipFit Owner Menu");
+            System.out.println("------------------------------------------------------------------------------------------------");
             java.util.Scanner in = new java.util.Scanner(System.in);
             System.out.println("1. Register Center");
             System.out.println("2. Add New Slot");
@@ -33,6 +34,7 @@ public class GymOwnerFlipfitmenu {
             if (choice == 1) {
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Registering Gym Center...");
+                System.out.println("------------------------------------------------------------------------------------------------");
                 System.out.println("Enter your CenterName");
                 String centerName = scanner.next();
                 System.out.println("Enter your Center Location");
@@ -46,6 +48,7 @@ public class GymOwnerFlipfitmenu {
             else if (choice == 2) {
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Adding new slot...");
+                System.out.println("------------------------------------------------------------------------------------------------");
                 System.out.println("Enter your CenterId:");
                 int centerId = scanner.nextInt();
                 System.out.println("Enter your StartTime as HH:MM:SS in 24-Hour Format");
@@ -64,6 +67,7 @@ public class GymOwnerFlipfitmenu {
             else if (choice == 3) {
                 Scanner scanner = new Scanner(System.in);
                 System.out.println("Deleting slot...");
+                System.out.println("------------------------------------------------------------------------------------------------");
                 System.out.println("Enter your CenterId:");
                 int centerId = scanner.nextInt();
                 System.out.println("Enter your StartTime as HH:MM:SS in 24-Hour Format");
@@ -74,6 +78,7 @@ public class GymOwnerFlipfitmenu {
             }
             else if (choice == 4) {
                 System.out.println("Deleting center...");
+                System.out.println("------------------------------------------------------------------------------------------------");
                 in = new java.util.Scanner(System.in);
                 System.out.println("Enter the center ID to be deleted: ");
                 int centerId = in.nextInt();
@@ -84,6 +89,7 @@ public class GymOwnerFlipfitmenu {
             else if (choice == 5) {
                 in = new java.util.Scanner(System.in);
                 System.out.println("Editing profile...");
+                System.out.println("------------------------------------------------------------------------------------------------");
                 System.out.println("Enter your new name");
                 String name = in.nextLine();
                 System.out.println("Enter your new email");
@@ -111,6 +117,7 @@ public class GymOwnerFlipfitmenu {
     public void register() {
         java.util.Scanner in = new java.util.Scanner(System.in);
         System.out.println("Registering Gym Owner Menu");
+        System.out.println("------------------------------------------------------------------------------------------------");
         System.out.println("Enter your name");
         String name = in.nextLine();
         System.out.println("Enter your email");

@@ -14,10 +14,7 @@ public class DBConnection
             Class.forName("com.mysql.cj.jdbc.Driver");
             String password = "Password123";//Enter your password here
             Connection con=DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/GymCustomer","root",password);
-
-
-
+                    "jdbc:mysql://localhost:3306/GymCustomer","root","Nishtha@2801$");
             System.out.println("Database Connected");
 
             return con;

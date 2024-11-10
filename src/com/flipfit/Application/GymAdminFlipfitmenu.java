@@ -21,6 +21,7 @@ public class GymAdminFlipfitmenu {
         currentAdminId = adminId;
         while (true) {
             java.util.Scanner in = new java.util.Scanner(System.in);
+            System.out.println("------------------------------------------------------------------------------------------------");
             System.out.println("1. View All Bookings");
             System.out.println("2. View All Customers");
             System.out.println("3. View All Owners");
@@ -32,11 +33,16 @@ public class GymAdminFlipfitmenu {
             if (choice == 1) {
                 List<GymBooking> list = service.viewBookings();
                 if (list.isEmpty()) {
-                    System.out.println("No bookings found");
+                   continue;
                 } else {
-                    System.out.println("BookingId CenterName CenterLocation StartTime EndTime Date");
+                    System.out.println("------------------------------------------------------------------------------------------------");
+
+
+                    System.out.printf("%-15s %-25s %-20s %-10s %-10s%n",
+                                      "BookingId" ,  "CenterName ","StartTime","EndTime","Date");
                     for (GymBooking booking : list) {
-                        System.out.println(booking.getBookingId() + " " + booking.getCenterName() + " " + booking.getStartTime().toString() + " " + booking.getEndTime().toString() + " " + booking.getBookingDate());
+                        System.out.printf("%-15s %-25s %-20s %-10s %-10s%n",
+                                booking.getBookingId() , booking.getCenterName(),booking.getStartTime().toString(), booking.getEndTime().toString(),booking.getBookingDate());
                     }
                 }
 
@@ -44,41 +50,49 @@ public class GymAdminFlipfitmenu {
             else if (choice == 2) {
                 List<GymCustomer> list = userService.viewAllCustomers();
                 if (list.isEmpty()) {
-                    System.out.println("No customers found");
+                   continue;
+
                 } else {
-                    System.out.println("CustomerId CustomerName CustomerEmail CustomerAddress CustomerPhone");
+                    System.out.println("------------------------------------------------------------------------------------------------");
+                    System.out.printf("%-15s %-25s %-20s %-10s %-10s%n","CustomerId"   , "CustomerName" ,    "CustomerEmail"  ,    "CustomerAddress"  ,    "CustomerPhone");
                     for (GymCustomer customer : list) {
-                        System.out.println(customer.getCustomerId() + " " + customer.getCustomerName() + " " + customer.getCustomerEmailAddress() + " " + customer.getCustomerAddress() + " " + customer.getCustomerPhone());
+                        System.out.printf("%-15s %-25s %-20s %-10s %-10s%n",customer.getCustomerId(), customer.getCustomerName(), customer.getCustomerEmailAddress(),customer.getCustomerAddress(), customer.getCustomerPhone());
                     }
                 }
             }
             else if (choice == 3) {
                 List<GymOwner> list = userService.viewAllGymOwners();
                 if (list.isEmpty()) {
-                    System.out.println("No owners found");
+                  continue;
+
                 } else {
-                    System.out.println("OwnerId OwnerName OwnerEmail OwnerAddress OwnerPhone");
+                    System.out.println("------------------------------------------------------------------------------------------------");
+                    System.out.printf("%-15s %-25s %-20s %-10s %-10s%n","OwnerId",    "OwnerName"   , "OwnerEmail "   ,  "OwnerAddress"   ,   "OwnerPhone");
                     for (GymOwner owner : list) {
-                        System.out.println(owner.getOwnerId() + " " + owner.getOwnerName() + " " + owner.getOwnerEmailAddress() + " " + owner.getOwnerAddress() + " " + owner.getOwnerPhone());
+                        System.out.printf("%-15s %-25s %-20s %-10s %-10s%n",owner.getOwnerId(), owner.getOwnerName() , owner.getOwnerEmailAddress(),owner.getOwnerAddress(), owner.getOwnerPhone());
                     }
                 }
             }
             else if (choice == 4) {
                 List<GymOwnerRequest> requests = service.pendingRequests();
                 if (requests.isEmpty()) {
-                    System.out.println("No pending requests found");
+                   continue;
+
                 } else {
-                    System.out.println("RequestId OwnerId Status CenterName CenterLocation NumOfSlots");
+                    System.out.println("------------------------------------------------------------------------------------------------");
+                    System.out.printf("%-15s %-15s %-20s %-25s %-30s %-15s%n","RequestId",    "OwnerId"  ,   "Status"    , "CenterName"  ,   "CenterLocation"    ," NumOfSlots");
                     for (GymOwnerRequest request : requests) {
-                        System.out.println(request.getOwnerId() + " " + request.getRequestId() + " " + request.getStatus() + " " + request.getCenterName() + " " + request.getCenterLocation() + " " + request.getNumOfSlots());
+                        System.out.printf("%-15s %-15s %-20s %-25s %-30s %-15s%n",request.getRequestId(),request.getOwnerId(), request.getStatus() ,request.getCenterName(),request.getCenterLocation(), request.getNumOfSlots());
                     }
                 }
             }
             else if (choice == 5) {
                 java.util.Scanner scanner = new java.util.Scanner(System.in);
+                System.out.println("------------------------------------------------------------------------------------------------");
                 System.out.println("Provide Your Request ID for approving/rejecting");
                 int requestId = scanner.nextInt();
-                System.out.println("Select Choice : approved/rejected");
+                System.out.println("------------------------------------------------------------------------------------------------");
+                System.out.println("Select Choice : approve/reject");
                 String statuss = scanner.next();
                 service.approveOwnerRegistration(requestId, statuss);
             }
