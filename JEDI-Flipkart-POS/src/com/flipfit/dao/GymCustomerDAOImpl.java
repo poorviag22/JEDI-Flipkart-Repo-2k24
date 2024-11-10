@@ -18,7 +18,14 @@ import java.util.List;
 public class GymCustomerDAOImpl implements GymCustomerDAO {
     private Connection conn = null;
     private PreparedStatement statement = null;
-
+/**
+     * Creates a new profile for a gym customer.
+     *
+     * @param customer The GymCustomer object containing profile details.
+     * @return true if the profile creation is successful; false otherwise.
+     * @throws InvalidCredentialsException if the email address is already registered.
+     * @throws DataEntryFailedException if there is a failure in database insertion.
+     */
     @Override
     public boolean createProfile(GymCustomer customer) throws InvalidCredentialsException, DataEntryFailedException {
         try {
@@ -77,7 +84,13 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
         }
         return false;
     }
-
+/**
+     * Updates the profile information of an existing gym customer.
+     *
+     * @param customer The GymCustomer object with updated profile details.
+     * @return true if the profile update is successful; false otherwise.
+     * @throws DataEntryFailedException if updating the profile in the database fails.
+     */
     @Override
     public boolean editProfile(GymCustomer customer) throws DataEntryFailedException {
         String sql = "UPDATE Customer SET Name = ?, Email = ?, Address = ?, PhoneNumber = ?, Password=? WHERE CustId = ?";
@@ -121,7 +134,13 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
         }
         return false;
     }
-
+/**
+     * Retrieves a list of bookings made by a specific customer.
+     *
+     * @param customerId The ID of the customer whose bookings are to be retrieved.
+     * @return A list of GymBooking objects representing the customer's bookings.
+     * @throws ResourceNotFoundException if no bookings are found for the customer.
+     */
     @Override
     public List<GymBooking> viewBookings(int customerId) throws ResourceNotFoundException {
         List<GymBooking> bookings = new ArrayList<>();
@@ -160,7 +179,15 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
         }
         return bookings;
     }
-
+/**
+     * Cancels a specific booking for a customer.
+     *
+     * @param customerId The ID of the customer who made the booking.
+     * @param bookingID The ID of the booking to be canceled.
+     * @return true if the booking is canceled successfully; false otherwise.
+     * @throws InvalidCredentialsException if the booking ID is invalid.
+     * @throws UnauthorisedAccessException if the customer is not authorized to cancel this booking.
+     */
     @Override
     public boolean cancelBooking(int customerId, int bookingID) throws InvalidCredentialsException, UnauthorisedAccessException {
         try {
@@ -214,7 +241,16 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
             return false;
         }
     }
-
+/**
+     * Creates a new booking for a customer in a specific slot.
+     *
+     * @param customerID The ID of the customer making the booking.
+     * @param slotID The ID of the slot to be booked.
+     * @param centerId The ID of the center where the slot is available.
+     * @param date The date of the booking.
+     * @return The booking ID if the booking is successful, -1 if it fails.
+     * @throws ResourceNotFoundException if no seats are available for the slot on the specified date.
+     */
     @Override
     public int createBooking(int customerID, int slotID, int centerId, Date date) throws ResourceNotFoundException {
         try {
@@ -291,7 +327,13 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
             return -1;
         }
     }
-
+/**
+     * Processes a payment for a specific booking.
+     *
+     * @param paymentData The GymPayment object containing payment details.
+     * @return The payment ID if the payment is successful; -1 if it fails.
+     * @throws DataEntryFailedException if the payment entry fails in the database.
+     */
     @Override
     public int makepayment(GymPayment paymentData) throws DataEntryFailedException {
         try {
@@ -337,7 +379,15 @@ public class GymCustomerDAOImpl implements GymCustomerDAO {
         }
         return -1;
     }
-
+/**
+     * Updates the password for a customer with the given email and role.
+     *
+     * @param email The email of the customer.
+     * @param password The new password to be set.
+     * @param role The role of the user (e.g., "gymcustomer").
+     * @return true if the password update is successful; false otherwise.
+     * @throws InvalidCredentialsException if the email or role is incorrect.
+     */
     @Override
     public boolean updatepwd(String email, String password, String role) throws InvalidCredentialsException {
         try {
