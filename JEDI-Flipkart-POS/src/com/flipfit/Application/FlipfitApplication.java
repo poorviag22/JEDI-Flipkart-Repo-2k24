@@ -12,6 +12,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class FlipfitApplication {
+      /**
+     * This method handles the login functionality for the FlipFit application.
+     * It prompts the user for their email, password, and role (GymAdmin, GymCustomer, GymOwner),
+     * and performs the login operation based on the provided role. 
+     * It then redirects the user to the respective menu (GymAdmin, GymCustomer, or GymOwner) 
+     * if the login is successful. 
+     * If the login fails, it shows an error message.
+     */
     public static void login() {
         java.util.Scanner in = new java.util.Scanner(System.in);
         System.out.println("Enter the Email Address :---");
@@ -48,7 +56,11 @@ public class FlipfitApplication {
             System.out.println("Invalid role, try again");
         }
     }
-
+  /**
+     * This method handles user registration based on the user's choice.
+     * If the choice is 2, it registers a GymCustomer by invoking the appropriate registration method.
+     * If the choice is 3, it registers a GymOwner by invoking the respective registration method.
+     */
     public static void registration(int choice) {
         if (choice == 2) {
             GymCustomerFlipfitmenu customer = new GymCustomerFlipfitmenu();
@@ -59,6 +71,12 @@ public class FlipfitApplication {
             own.register();
         }
     }
+    /**
+     * This method allows the user to update their password.
+     * It prompts the user for their email, new password, and role.
+     * Based on the role, it calls the appropriate business logic to update the password in the database.
+     * If the update is successful, a success message is displayed; otherwise, an error message is shown.
+     */
 
     public static void updatepwd() {
         java.util.Scanner in = new java.util.Scanner(System.in);
@@ -95,6 +113,8 @@ public class FlipfitApplication {
             System.out.println("Invalid Role, Try Again");
         }
     }
+
+//main function
 
     public static void main(String agrs[]) {
 
