@@ -13,7 +13,12 @@ import com.flipfit.business.GymOwnerBusinessImpl;
 public class GymOwnerFlipfitmenu {
     int currentownerId = 0;
     GymOwnerBusiness service = new GymOwnerBusinessImpl();
-
+ /**
+     * Displays the gym owner menu and allows them to choose various actions
+     * like registering a center, adding or deleting slots, and updating their profile.
+     *
+     * @param ownerId The ID of the gym owner.
+     */
     public void gymownermenu(int ownerId) {
         currentownerId = ownerId;
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
@@ -113,6 +118,12 @@ public class GymOwnerFlipfitmenu {
         }
 
     }
+        /**
+     * Registers a new gym owner by collecting their details such as name,
+     * email, password, address, and contact number, and then calling the service
+     * to save the new profile.
+     */
+
 
     public void register() {
         java.util.Scanner in = new java.util.Scanner(System.in);
