@@ -15,7 +15,14 @@ import java.time.LocalTime;
 public class GymOwnerDAOImpl implements GymOwnerDAO {
     private Connection connection = null;
     private PreparedStatement statement = null;
-
+/**
+ * Creates a new profile for a gym owner.
+ *
+ * @param gymOwner The GymOwner object containing profile details.
+ * @return true if profile creation is successful; false otherwise.
+ * @throws InvalidCredentialsException if the email already exists.
+ * @throws DataEntryFailedException if profile creation fails in the database.
+ */
     @Override
     public boolean createProfile(GymOwner gymOwner) throws InvalidCredentialsException, DataEntryFailedException {
         try {
@@ -70,6 +77,16 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
         return false;
     }
 
+/**
+ * Registers a new gym center under an owner.
+ *
+ * @param ownerId The ID of the gym owner.
+ * @param centerName The name of the gym center.
+ * @param location The location of the gym center.
+ * @param slots The number of slots available at the center.
+ * @return true if registration is successful; false otherwise.
+ * @throws DataEntryFailedException if data entry fails in the OwnerRequest table.
+ */
     @Override
     public boolean registerCenter(int ownerId, String centerName, String location, int slots) throws DataEntryFailedException{
         try {
@@ -92,7 +109,15 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
         }
         return false;
     }
-
+/**
+ * Adds a new slot to a gym center.
+ *
+ * @param centerID The ID of the gym center.
+ * @param slot The GymSlots object containing slot details.
+ * @return true if slot addition is successful; false otherwise.
+ * @throws ResourceAlreadyExistsException if a similar slot already exists.
+ * @throws DataEntryFailedException if slot addition fails in the database.
+ */
     @Override
     public boolean addSlots(int centerID, GymSlots slot) throws ResourceAlreadyExistsException, DataEntryFailedException {
         // Check if the same slot is already present in the slot table for the given gymCenter
@@ -124,6 +149,13 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
         }
         return false;
     }
+   / **
+ * Checks if a slot already exists for a given center and time range.
+ *
+ * @param centerID The ID of the gym center.
+ * @param slot The GymSlots object containing slot details.
+ * @return true if the slot exists; false otherwise.
+ */
 
     public boolean isSlotExists(int centerID, GymSlots slot) {
         String sql = "SELECT COUNT(*) AS count FROM Slots WHERE centerID = ? AND starttime = ? AND endtime = ?";
@@ -146,7 +178,14 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
         }
         return false;
     }
-
+/**
+ * Deletes a specific slot from a gym center.
+ *
+ * @param centerID The ID of the gym center.
+ * @param starttime The start time of the slot to be deleted.
+ * @return true if deletion is successful; false otherwise.
+ * @throws DataEntryFailedException if slot deletion fails.
+ */
 
     @Override
     public boolean deleteSlot(int centerID, LocalTime starttime) throws DataEntryFailedException {
@@ -175,6 +214,13 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
         }
         return false;
     }
+/**
+ * Deletes a gym center from the database.
+ *
+ * @param centerID The ID of the gym center to be deleted.
+ * @return true if deletion is successful; false otherwise.
+ * @throws DataEntryFailedException if center deletion fails.
+ */
 
     @Override
     public boolean deleteCenter(int centerID) throws DataEntryFailedException{
@@ -201,7 +247,13 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
         }
         return false;
     }
-
+/**
+ * Edits an existing profile for a gym owner.
+ *
+ * @param gymOwner The GymOwner object containing updated profile details.
+ * @return true if profile update is successful; false otherwise.
+ * @throws DataEntryFailedException if profile update fails.
+ */
     @Override
     public boolean editProfile(GymOwner gymOwner) throws DataEntryFailedException {
         String sql = "UPDATE OwnerInfo SET Name = ?, Email = ?, Address = ?, PhoneNumber = ?, Password=? WHERE OwnerId = ?";
@@ -245,6 +297,15 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
         return false;
     }
 
+/**
+ * Updates the password for a specific user.
+ *
+ * @param email The email of the user.
+ * @param password The new password.
+ * @param role The role of the user (e.g., gym owner).
+ * @return true if the password update is successful; false otherwise.
+ * @throws InvalidCredentialsException if the user does not exist for the given role.
+ */
     @Override
     public boolean updatepwd(String email, String password, String role) throws InvalidCredentialsException {
         try {
