@@ -10,7 +10,20 @@ import com.flipfit.business.GymUserBusiness;
 import com.flipfit.business.GymUserBusinessImpl;
 
 import java.util.*;
-
+/**
+     * Displays the Gym Admin menu and manages admin interactions.
+     * Based on the admin's choice, it allows them to:
+     *  - View all gym bookings.
+     *  - View a list of all customers.
+     *  - View a list of all gym owners.
+     *  - View and approve or reject pending gym owner registration requests.
+     * 
+     * Input:
+     *  - adminId: An integer representing the ID of the current logged-in admin.
+     * 
+     * Behavior:
+     *  - Runs a continuous loop displaying the menu and processing the admin's choice until "Exit" is selected.
+     */
 public class GymAdminFlipfitmenu {
     // Create instances of business services for admin and user functionalities
     GymAdminBusiness service = new GymAdminBusinessImpl();
