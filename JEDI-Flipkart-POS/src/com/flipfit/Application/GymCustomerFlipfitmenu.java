@@ -23,6 +23,13 @@ public class GymCustomerFlipfitmenu {
     GymAdminBusiness ser = new GymAdminBusinessImpl();
 
     // Method for registering a new Gym Customer
+    /**
+     * Registers a new gym customer.
+     * Collects the customer's name, email, address, password, and contact number,
+     * then creates a new GymCustomer object and calls the service to register.
+     * If registration is successful, a success message is displayed;
+     * otherwise, an error message indicates the user already exists.
+     */
     public void register() {
         java.util.Scanner in = new java.util.Scanner(System.in);
         System.out.println("------------------------------------------------------------------------------------------------");
@@ -49,6 +56,12 @@ public class GymCustomerFlipfitmenu {
     }
 
     // Method for displaying the customer menu and handling the customer actions
+     /**
+     * Displays the customer menu and handles customer actions.
+     * Allows the user to view bookings, view gym centers and book slots, cancel bookings, edit profile, or exit.
+     * Each option is handled within the loop, providing continuous interaction until the user chooses to exit.
+     * @param custId the ID of the current customer
+     */
     public void gymcustomermenu(int custId) {
         currentcustId = custId;  // Set current customer ID
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
@@ -84,6 +97,11 @@ public class GymCustomerFlipfitmenu {
                     }
                 }
             }
+                /**
+                 * Option 2: Displays available gym centers and allows the customer to book a slot.
+                 * Prompts the customer for a date and center ID, then retrieves available slots for the selected date
+                 * and allows the customer to book a slot by specifying the slot ID and payment option.
+                 */
             else if (choice == 2) {
                 // Option 2: View gym centers and book a slot
                 List<GymCenter> list = ser.viewCenter();  // Get list of available gym centers
@@ -139,6 +157,11 @@ public class GymCustomerFlipfitmenu {
                     e.printStackTrace();
                 }
             }
+                  /**
+                 * Option 3: Cancels an existing booking.
+                 * Prompts the customer for the booking ID and calls the service to cancel the booking.
+                 * Displays a success message if the cancellation is successful.
+                 */
             else if (choice == 3) {
                 // Option 3: Cancel an existing booking
                 in = new Scanner(System.in);
@@ -148,6 +171,11 @@ public class GymCustomerFlipfitmenu {
                     System.out.println("Booking Canceled Successfully");
                 }
             }
+                /**
+                 * Option 4: Edits the customer's profile.
+                 * Prompts the customer for updated profile details including name, email, address, password, and contact number.
+                 * Calls the service to update the profile and displays a success message upon completion.
+                 */
             else if (choice == 4) {
                 // Option 4: Edit customer profile
                 in = new java.util.Scanner(System.in);
