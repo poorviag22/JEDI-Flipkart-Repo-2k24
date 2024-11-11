@@ -51,6 +51,7 @@ public class GymOwnerBusinessImpl implements GymOwnerBusiness {
     public boolean addnewSlot(int centerId, GymSlots slot) {
         try {
             ownerDAO.addSlots(centerId, slot);
+            return true;
         } catch (ResourceAlreadyExistsException e) {
             System.out.println(e);
         } catch (DataEntryFailedException e) {

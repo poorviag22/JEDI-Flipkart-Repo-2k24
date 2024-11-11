@@ -149,14 +149,14 @@ public class GymOwnerDAOImpl implements GymOwnerDAO {
         }
         return false;
     }
-   / **
- * Checks if a slot already exists for a given center and time range.
- *
- * @param centerID The ID of the gym center.
- * @param slot The GymSlots object containing slot details.
- * @return true if the slot exists; false otherwise.
- */
 
+
+    /**
+     *
+     *@param centerID The ID of the gym center.
+      * @param slot The GymSlots object containing slot details.
+     * @return true if the slot exists; false otherwise.
+     */
     public boolean isSlotExists(int centerID, GymSlots slot) {
         String sql = "SELECT COUNT(*) AS count FROM Slots WHERE centerID = ? AND starttime = ? AND endtime = ?";
         try {
