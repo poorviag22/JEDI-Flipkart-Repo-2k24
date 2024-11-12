@@ -42,6 +42,16 @@ public class FlipFitGymOwnerRestController {
 
     }
 
+    /**
+     *
+     * @param centerid
+     * @param starttime
+     * @param endtime
+     * @param noofseats
+     * @param costs
+     * @return
+     * adds a new slot to particular center
+     */
     @POST
     @Path("/addslot")
     public String addslot(
@@ -62,6 +72,13 @@ public class FlipFitGymOwnerRestController {
 
     }
 
+    /**
+     *
+     * @param centerid
+     * @param starttime
+     * @return
+     * deletes a particular slots
+     */
     @DELETE
     @Path("/deleteslot")
     public String deleteslot(
@@ -77,6 +94,12 @@ public class FlipFitGymOwnerRestController {
 
     }
 
+    /**
+     *
+     * @param centerid
+     * @return
+     * deletes a center
+     */
     @DELETE
     @Path("/{centerid}/deletecenter")
     public String deletecenter(@PathParam("centerid") Integer centerid) {
@@ -87,6 +110,17 @@ public class FlipFitGymOwnerRestController {
 
     }
 
+    /**
+     *
+     * @param name
+     * @param email
+     * @param address
+     * @param pwd
+     * @param contact
+     * @param ownerId
+     * @return
+     * edit user profile
+     */
     @PUT
     @Path("/editprofile")
     public String editprofile(

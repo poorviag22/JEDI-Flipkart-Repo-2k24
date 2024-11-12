@@ -37,18 +37,33 @@ public class FlipFitGymCustomerRestController {
         }
     }
 
+    /**
+     *
+     * @param customerId
+     * @return the list of all the bookings of that customer
+     */
     @GET
     @Path("/{customerId}/viewBookings")
     public List<GymBooking> viewBookings(@PathParam("customerId") Integer customerId) {
         return service.viewBookings(customerId);
     }
 
+    /**
+     *
+     * @return the list of all the centers
+     */
     @GET
     @Path("/viewcenters")
     public List<GymCenter> viewCenters() {
         return ser.viewCenter();
     }
 
+    /**
+     *
+     * @param centerId
+     * @param date
+     * @return the list of all the slots
+     */
     @GET
     @Path("/{centerId}/viewslots")
     public List<GymSlots> viewSlots(@PathParam("centerId") Integer centerId, String date) {
@@ -56,6 +71,15 @@ public class FlipFitGymCustomerRestController {
         return centerBusiness.viewSlots(centerId, stringtodate((date)));
     }
 
+    /**
+     *
+     * @param custId
+     * @param centerId
+     * @param date
+     * @param slotid
+     * @return
+     * book a slot
+     */
     @POST
     @Path("/{slotid}/bookaslot")
     public String bookaslot(@QueryParam("custId") Integer custId, @QueryParam("centerId") Integer centerId, @QueryParam("date") String date, @PathParam("slotid") Integer slotid) {
@@ -67,6 +91,14 @@ public class FlipFitGymCustomerRestController {
 
     }
 
+    /**
+     *
+     * @param bookingid
+     * @param custid
+     * @return
+     * cancels booking
+     */
+
     @DELETE
     @Path("/{bookingid}/{custid}/cancelbooking")
     public String cancelBooking(@PathParam("bookingid") Integer bookingid, @PathParam("custid") Integer custid) {
@@ -76,6 +108,17 @@ public class FlipFitGymCustomerRestController {
             return "Booking Canceled Failed";
     }
 
+    /**
+     *
+     * @param name
+     * @param email
+     * @param address
+     * @param pwd
+     * @param contact
+     * @param custId
+     * @return
+     * edits the customer profile
+     */
     @PUT
     @Path("/editprofile")
     public String editprofile(

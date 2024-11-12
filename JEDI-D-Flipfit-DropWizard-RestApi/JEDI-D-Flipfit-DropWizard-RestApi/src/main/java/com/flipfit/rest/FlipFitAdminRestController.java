@@ -13,12 +13,17 @@ import java.util.*;
 import com.flipfit.bean.*;
 import com.flipfit.business.*;
 
+
 @Path("/admin-menu")
 @Produces(MediaType.APPLICATION_JSON)
 public class FlipFitAdminRestController {
     GymAdminBusiness service = new GymAdminBusinessImpl();
     GymUserBusiness userService = new GymUserBusinessImpl();
 
+    /**
+     *
+     * @return the list of all the bookings
+     */
     @GET
     @Path("/viewbookings")
     public List<GymBooking> viewBookings() {
@@ -26,6 +31,10 @@ public class FlipFitAdminRestController {
         return service.viewBookings();
     }
 
+    /**
+     *
+     * @return the list of all the customers
+     */
     @GET
     @Path("/viewcustomers")
     public List<GymCustomer> viewCustomer() {
@@ -33,18 +42,33 @@ public class FlipFitAdminRestController {
 
     }
 
+    /**
+     *
+     * @return the list of all the owners
+     */
     @GET
     @Path("/viewowners")
     public List<GymOwner> viewOwner() {
         return userService.viewAllGymOwners();
     }
 
+    /**
+     *
+     * @return the list of all the pending requests
+     */
     @GET
     @Path("/viewpendingrequests")
     public List<GymOwnerRequest> viewPendingRequests() {
         return service.pendingRequests();
     }
 
+    /**
+     *
+     * @param requestId
+     * @param statuss
+     * @return
+     * updates the request status
+     */
     @PUT
     @Path("/{requestId}/updateOwnerRequest")
     public String aprroveOwnerRequest(@PathParam("requestId") Integer requestId, String statuss) {
